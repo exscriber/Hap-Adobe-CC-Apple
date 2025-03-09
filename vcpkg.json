@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "vcpkg-configuration": {
+    "overlay-ports": ["vcpkg/ports"],
+    "overlay-triplets": ["vcpkg/triplets"]
+  },
+  "dependencies": [
+    "ffmpeg",
+    "libsquish",
+    "nlohmann-json",
+    "snappy",
+    {
+      "name": "stackwalker",
+      "platform": "windows"
+    }
+  ]
+}
