@@ -1,8 +1,8 @@
-.DS_store
 .DS_Store
 .vscode
 build/
-external/adobe/premiere/
+external/Adobe/AfterEffectsSDK
+external/Adobe/PremiereProSDK
 Release/
 Debug/
 Xcode/
