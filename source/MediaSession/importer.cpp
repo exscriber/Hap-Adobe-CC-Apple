@@ -1,7 +1,7 @@
 #include <codecvt>
 #include <new>
 
-#include "codec_registration.hpp"
+#include "codec.hpp"
 #include "importer.hpp"
 
 #ifdef PRMAC_ENV

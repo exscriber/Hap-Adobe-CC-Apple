@@ -8,7 +8,7 @@
 #include <string>
 #include <thread>
 
-#include "codec_registration.hpp"
+#include "codec.hpp"
 #include "freelist.hpp"
 #include "movie_reader.hpp"
 

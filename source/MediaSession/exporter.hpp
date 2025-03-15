@@ -8,7 +8,7 @@
 #include <thread>
 
 #include "movie_writer.hpp"
-#include "codec_registration.hpp"
+#include "codec.hpp"
 #include "freelist.hpp"
 
 enum class ExportJobType { Video, Audio };

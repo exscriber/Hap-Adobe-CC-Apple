@@ -8,13 +8,8 @@
 #include <ostream>
 #include <string>
 
-#ifdef __APPLE__
-#include <boost/filesystem.hpp>
-namespace fs = ::boost::filesystem;
-#else
 #include <filesystem>
 namespace fs = ::std::filesystem;
-#endif
 
 extern"C"
 {
@@ -134,8 +129,7 @@ inline void setAVCodecParams(
             break;
         }
     }
-    codecpar.channels = numChannels;
-    codecpar.channel_layout = av_get_default_channel_layout(numChannels);
+    av_channel_layout_default(&codecpar.ch_layout, numChannels);
     codecpar.sample_rate = sampleRate;
 }
 
@@ -147,7 +141,7 @@ inline AudioDef getAVCodecParams(
     int bytesPerSample;
     AudioEncoding encoding;
 
-    numChannels = codecpar.channels;
+    numChannels = codecpar.ch_layout.nb_channels;
     sampleRate = codecpar.sample_rate;
 
     switch (codecpar.codec_id)

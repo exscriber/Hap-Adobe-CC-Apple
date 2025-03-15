@@ -11,13 +11,13 @@
 extern "C" {
 #include <libavutil/channel_layout.h>
 
-// !!! needed for libavformat/internal.h
-#ifdef _WIN32
-#include <io.h>
-#include <direct.h>
-#endif
 // !!! needed to fool 4CC validation
-#include <libavformat/internal.h>
+// from libavformat/internal.h
+#include <libavcodec/codec_id.h>
+typedef struct AVCodecTag {
+    enum AVCodecID id;
+    unsigned int tag;
+} AVCodecTag;
 }
 
 #include "logging.hpp"
@@ -227,7 +227,7 @@ void MovieWriter::close()
     }
 }
 
-int MovieWriter::c_onWrite(void *context, uint8_t *data, int size)
+int MovieWriter::c_onWrite(void *context, const uint8_t *data, int size)
 {
     MovieWriter *writer = reinterpret_cast<MovieWriter*>(context);
     try
@@ -286,9 +286,8 @@ void MovieWriter::addAudioStream(const AudioDef& audio)
 
 void MovieWriter::writeVideoFrame(const uint8_t *data, size_t size)
 {
-    AVPacket pkt = { 0 };
+    AVPacket pkt = *av_packet_alloc();
 
-    av_init_packet(&pkt);
     pkt.data = const_cast<uint8_t *>(data);
     pkt.size = (int)size;
     pkt.stream_index = videoStream_->index;
@@ -308,9 +307,8 @@ void MovieWriter::writeVideoFrame(const uint8_t *data, size_t size)
 
 void MovieWriter::writeAudioFrame(const uint8_t *data, size_t size, int64_t pts)
 {
-    AVPacket pkt = { 0 };
+    AVPacket pkt = *av_packet_alloc();
 
-    av_init_packet(&pkt);
     pkt.data = const_cast<uint8_t *>(data);
     pkt.size = (int)size;
     pkt.stream_index = audioStream_->index;

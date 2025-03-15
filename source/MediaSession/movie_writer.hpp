@@ -62,7 +62,7 @@ private:
     bool writeMoovTagEarly_;
 
     // adapt writers that throw exceptions
-    static int c_onWrite(void *context, uint8_t *data, int size);
+    static int c_onWrite(void *context, const uint8_t *data, int size);
     static int64_t c_onSeek(void *context, int64_t offset, int whence);
 
     // we're forced to allocate a buffer for AVIO.
