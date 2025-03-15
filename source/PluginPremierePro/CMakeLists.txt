@@ -1,103 +1,74 @@
-cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
-project(PremierePlugin)
+cmake_minimum_required(VERSION 3.31)
 
 # this is the one we will install
-add_library(PremierePlugin MODULE)
+add_library(PluginPremierePro MODULE)
 
-add_definitions(-DFOUNDATION_FILE_IMPORT_FOUR_CC=${Foundation_FILE_IMPORT_FOUR_CC})
+add_definitions(-DFILE_IMPORT_FOUR_CC=${FILE_IMPORT_FOUR_CC})
 
-target_sources(PremierePlugin
+target_sources(PluginPremierePro
     PRIVATE
         premiereImporter.cpp
         premiereImporter.hpp
         async_importer.cpp
         async_importer.hpp
         configure.hpp
-        export_settings.cpp
         export_settings.hpp
-        file_import.rc
-        main.cpp
-        main.hpp
+        premiereExporter.cpp
+        premiereExporter.hpp
         premiereParams.cpp
         premiereParams.hpp
         prstring.cpp
         prstring.hpp
-        targetver.h
-        presets.hpp
-        $<$<PLATFORM_ID:Windows>:presets.cpp>
-        $<$<PLATFORM_ID:Darwin>:presets.mm>
+        $<$<PLATFORM_ID:Windows>:file_import.rc>
 )
 
 find_library(Foundation Foundation)
 
-target_link_libraries(PremierePlugin
+target_link_libraries(PluginPremierePro
     PRIVATE
-        Codec
-        CodecRegistration
-        CodecFoundationSession
-        AdobePremiereSdk
-        AdobeShared
+        AdobePremiereProSDK
+        Utility
+        BaseCodec
+        HapCodec
+        MediaSession
         $<$<PLATFORM_ID:Windows>:StackWalker>
         $<$<PLATFORM_ID:Darwin>:${Foundation}>
 )
 
 if (MSVC)
-    set_target_properties(PremierePlugin
+    set_target_properties(PluginPremierePro
         PROPERTIES
-            OUTPUT_NAME "${Foundation_CODEC_NAME}Plugin"
+            OUTPUT_NAME "${CODEC_NAME}Plugin"
             SUFFIX ".prm"
     )
     install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION bin OPTIONAL)
 elseif (APPLE)
 # macOS plugins have a common extension, so identify the host in the name
-    set_target_properties(PremierePlugin
+    set_target_properties(PluginPremierePro
         PROPERTIES
-            OUTPUT_NAME "${Foundation_CODEC_NAME}PremierePlugin"
+            OUTPUT_NAME "${CODEC_NAME}PremierePro"
     )
 endif()
 
-if (NOT DEFINED Foundation_CC_PLUGIN_INSTALL_DESTINATION)
-    message(FATAL_ERROR "Parent must define Foundation_CC_PLUGIN_INSTALL_DESTINATION")
+if (NOT DEFINED INSTALL_DESTINATION)
+    message(FATAL_ERROR "Parent must define INSTALL_DESTINATION")
 endif ()
 if (APPLE)
-if (NOT DEFINED Foundation_IDENTIFIER_PREFIX)
-message(FATAL_ERROR "Parent must define Foundation_IDENTIFIER_PREFIX")
+if (NOT DEFINED IDENTIFIER_PREFIX)
+message(FATAL_ERROR "Parent must define IDENTIFIER_PREFIX")
 endif ()
 endif (APPLE)
 
-# rn Preset install to plugin is macOS-only
-if (APPLE)
-    if (DEFINED Foundation_PRESETS)
-        # Install presets to Resources/Presets
-        target_sources(PremierePlugin
-            PRIVATE
-                ${Foundation_PRESETS}
-        )
-        set_source_files_properties(
-            ${Foundation_PRESETS}
-            PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/Presets"
-        )
-        # See CMakeLists.txt in installer for script to handle install to CC locations
-    endif ()
-endif (APPLE)
-
-set_target_properties(PremierePlugin
+set_target_properties(PluginPremierePro
     PROPERTIES
 	    BUNDLE TRUE
-	    MACOSX_BUNDLE_GUI_IDENTIFIER ${Foundation_IDENTIFIER_PREFIX}.pr
+	    MACOSX_BUNDLE_GUI_IDENTIFIER ${IDENTIFIER_PREFIX}.pr
 )
 
-if (APPLE)
-    # used so we can look up bundle location from code
-    set_property(SOURCE presets.mm
-                    APPEND
-                    PROPERTY COMPILE_DEFINITIONS FOUNDATION_MACOSX_BUNDLE_GUI_IDENTIFIER=@\"${Foundation_IDENTIFIER_PREFIX}.pr\"
-    )
-endif (APPLE)
 install(
-  TARGETS PremierePlugin
+  TARGETS PluginPremierePro
   RUNTIME
-  BUNDLE DESTINATION ${Foundation_CC_PLUGIN_INSTALL_DESTINATION}
-  LIBRARY DESTINATION ${Foundation_CC_PLUGIN_INSTALL_DESTINATION}
+  BUNDLE DESTINATION ${INSTALL_DESTINATION}
+  LIBRARY DESTINATION ${INSTALL_DESTINATION}
   COMPONENT plugin
 )

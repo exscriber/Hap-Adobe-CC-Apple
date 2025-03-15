@@ -1,19 +1,18 @@
-cmake_minimum_required(VERSION 3.12.0 FATAL_ERROR)
-project(AfterEffectsPlugin)
+cmake_minimum_required(VERSION 3.31)
 
-add_definitions(-DCODEC_NAME_WITH_HEX_SIZE_PREFIX=${Foundation_CODEC_NAME_WITH_HEX_SIZE_PREFIX})
+add_definitions(-DCODEC_NAME_WITH_HEX_SIZE_PREFIX=${CODEC_NAME_WITH_HEX_SIZE_PREFIX})
 
 # this is the one we will install
-add_library(AfterEffectsPlugin MODULE)
+add_library(PluginAfterEffects MODULE)
 
 if (MSVC)
-    set(${PROJECT_NAME}_OUTPUT_NAME "${Foundation_CODEC_NAME}Plugin")
+    set(${PROJECT_NAME}_OUTPUT_NAME "${CODEC_NAME}Plugin")
 elseif (APPLE)
 # macOS plugins have a common extension, so identify the host in the name
-    set(${PROJECT_NAME}_OUTPUT_NAME "${Foundation_CODEC_NAME}AfterEffectsPlugin")
+    set(${PROJECT_NAME}_OUTPUT_NAME "${CODEC_NAME}AfterEffects")
 endif()
 
-target_sources(AfterEffectsPlugin
+target_sources(PluginAfterEffects
     PRIVATE
         output_module.cpp
         output_module.cpp
@@ -33,21 +32,21 @@ target_sources(AfterEffectsPlugin
         $<$<PLATFORM_ID:Darwin>:${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_OUTPUT_NAME}.rsrc>
 )
 
-if (NOT DEFINED Foundation_IDENTIFIER_PREFIX)
-    message(FATAL_ERROR "Parent must define Foundation_IDENTIFIER_PREFIX")
+if (NOT DEFINED IDENTIFIER_PREFIX)
+    message(FATAL_ERROR "Parent must define IDENTIFIER_PREFIX")
 endif ()
-if (NOT DEFINED Foundation_CODEC_NAME)
-    message(FATAL_ERROR "Parent must define Foundation_CODEC_NAME")
+if (NOT DEFINED CODEC_NAME)
+    message(FATAL_ERROR "Parent must define CODEC_NAME")
 endif ()
-if (NOT DEFINED Foundation_CC_PLUGIN_INSTALL_DESTINATION)
-    message(FATAL_ERROR "Parent must define Foundation_CC_PLUGIN_INSTALL_DESTINATION")
+if (NOT DEFINED INSTALL_DESTINATION)
+    message(FATAL_ERROR "Parent must define INSTALL_DESTINATION")
 endif ()
 if (NOT DEFINED Foundation_OBJC_PREFIX)
 string(RANDOM LENGTH 5 ALPHABET ABCDEFGHIJKLMNOPQRSTUVWXYZ
         Foundation_OBJC_PREFIX)
 endif ()
 
-set(${PROJECT_NAME}_OSX_BUNDLE_IDENTIFIER ${Foundation_IDENTIFIER_PREFIX}.aex)
+set(${PROJECT_NAME}_OSX_BUNDLE_IDENTIFIER ${IDENTIFIER_PREFIX}.aex)
 
 if (APPLE)
     set_property(SOURCE mac/ui.mm mac/FNDControlViewController.m
@@ -56,7 +55,7 @@ if (APPLE)
     )
     set_property(SOURCE mac/ui.mm mac/FNDControlViewController.m
                     APPEND
-                    PROPERTY COMPILE_DEFINITIONS FOUNDATION_OBJC_PREFIX=${Foundation_OBJC_PREFIX} FOUNDATION_MACOSX_BUNDLE_GUI_IDENTIFIER=@\"${${PROJECT_NAME}_OSX_BUNDLE_IDENTIFIER}\"
+                    PROPERTY COMPILE_DEFINITIONS FOUNDATION_OBJC_PREFIX=${Foundation_OBJC_PREFIX} BUNDLE_GUI_IDENTIFIER=@\"${${PROJECT_NAME}_OSX_BUNDLE_IDENTIFIER}\"
     )
 # Required for AE to load the plugin at all
     set_source_files_properties(mac/PkgInfo
@@ -65,31 +64,27 @@ if (APPLE)
 endif (APPLE)
 
 find_library(AppKit AppKit)
+find_package(nlohmann_json CONFIG REQUIRED)
 
-target_link_libraries(AfterEffectsPlugin
+target_link_libraries(PluginAfterEffects
     PRIVATE
-        AdobeAfterEffectsSdk
-        AdobeShared
-        Codec
-        CodecRegistration
-        CodecFoundationSession
+        AdobeAfterEffectsSDK
+        Utility
+        BaseCodec
+        HapCodec
+        MediaSession
         nlohmann_json::nlohmann_json
         $<$<PLATFORM_ID:Windows>:StackWalker>
         $<$<PLATFORM_ID:Darwin>:${AppKit}>
 )
 
-# Include the ffmpeg headers
-target_include_directories(AfterEffectsPlugin
-    PRIVATE
-)
-
-set_target_properties(AfterEffectsPlugin
+set_target_properties(PluginAfterEffects
         PROPERTIES
             OUTPUT_NAME "${${PROJECT_NAME}_OUTPUT_NAME}"
 )
 
 if (MSVC)
-    set_target_properties(AfterEffectsPlugin
+    set_target_properties(PluginAfterEffects
         PROPERTIES
             SUFFIX ".aex"
     )
@@ -100,7 +95,7 @@ if (APPLE)
 endif (APPLE)
 
 if (APPLE AND NOT XCODE)
-    target_sources(AfterEffectsPlugin
+    target_sources(PluginAfterEffects
         PRIVATE
             ${CMAKE_BINARY_DIR}/SettingsViewController.nib)
 
@@ -115,7 +110,7 @@ if (APPLE AND NOT XCODE)
         message(FATAL_ERROR "Can't find ibtool to build macOS interface file.")
     endif ()
 elseif (APPLE)
-    target_sources(AfterEffectsPlugin
+    target_sources(PluginAfterEffects
         PRIVATE
             ${CMAKE_BINARY_DIR}/SettingsViewController.xib)
 endif ()
@@ -124,9 +119,9 @@ if (APPLE)
     find_program(APPLE_RESOURCE Rez)
     if (APPLE_RESOURCE)
         add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_OUTPUT_NAME}.rsrc
-                            COMMAND ${APPLE_RESOURCE} ${CMAKE_CURRENT_SOURCE_DIR}/output_module.r -define __MACH__ -define CODEC_NAME="${Foundation_CODEC_NAME}" -arch x86_64 -useDF -isysroot ${CMAKE_OSX_SYSROOT} -i "$<JOIN:$<TARGET_PROPERTY:AdobeAfterEffectsSdk,INTERFACE_INCLUDE_DIRECTORIES>,;-i;>" -o ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_OUTPUT_NAME}.rsrc
+                            COMMAND ${APPLE_RESOURCE} ${CMAKE_CURRENT_SOURCE_DIR}/output_module.r -define __MACH__ -define CODEC_NAME="${CODEC_NAME}" -arch x86_64 -useDF -isysroot ${CMAKE_OSX_SYSROOT} -i "$<JOIN:$<TARGET_PROPERTY:AdobeAfterEffectsSDK,INTERFACE_INCLUDE_DIRECTORIES>,;-i;>" -o ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_OUTPUT_NAME}.rsrc
                             COMMENT "Creating macOS resource file"
-                            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/output_module.r AdobeAfterEffectsSdk
+                            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/output_module.r AdobeAfterEffectsSDK
                             VERBATIM
                             COMMAND_EXPAND_LISTS)
     else (APPLE_RESOURCE)
@@ -134,7 +129,7 @@ if (APPLE)
     endif (APPLE_RESOURCE)
 endif (APPLE)
 
-set_target_properties(AfterEffectsPlugin
+set_target_properties(PluginAfterEffects
     PROPERTIES
 	    BUNDLE TRUE
 	    MACOSX_BUNDLE_GUI_IDENTIFIER ${${PROJECT_NAME}_OSX_BUNDLE_IDENTIFIER}
@@ -157,9 +152,9 @@ if (APPLE)
 endif (APPLE)
 
 install(
-  TARGETS AfterEffectsPlugin
+  TARGETS PluginAfterEffects
   RUNTIME
-  BUNDLE DESTINATION ${Foundation_CC_PLUGIN_INSTALL_DESTINATION}
-  LIBRARY DESTINATION ${Foundation_CC_PLUGIN_INSTALL_DESTINATION}
+  BUNDLE DESTINATION ${INSTALL_DESTINATION}
+  LIBRARY DESTINATION ${INSTALL_DESTINATION}
   COMPONENT plugin
 )

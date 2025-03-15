@@ -1,4 +1,4 @@
-#include "codec_registration.hpp"
+#include "codec.hpp"
 #include "configure.hpp"
 #include "export_settings.hpp"
 #include "premiereParams.hpp"
@@ -17,23 +17,9 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
     PrSDKTimeSuite* timeSuite = settings->timeSuite;
     csSDK_int32	exporterPluginID = generateDefaultParamRec->exporterPluginID;
     csSDK_int32	mgroupIndex = 0;
-    PrParam	hasVideo,
-        hasAudio,
-        seqWidth,
-        seqHeight,
-        seqFrameRate,
-        seqChannelType,
-        seqSampleRate;
-
-
-    // !!! WORKAROUND - needed in CC 2020 at least
-    // !!! These parameters aren't used by any foundation-based codecs, but if they're not present the match-source button
-    // !!! causes presets to become unusable
-    PrParam pixelAspectRatioNumerator;
-    PrParam pixelAspectRatioDenominator;
+    PrParam hasVideo, hasAudio, seqWidth, seqHeight, seqFrameRate, seqChannelType, seqSampleRate;
+    PrParam pixelAspectRatioNumerator, pixelAspectRatioDenominator;
     PrParam fieldTypeP;
-    // !!! end workaround
-
 
     const auto& codec = *CodecRegistry::codec();
 
@@ -43,13 +29,10 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_SourceHasAudio, &hasAudio);
         exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_VideoWidth, &seqWidth);
         exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_VideoHeight, &seqHeight);
-        // !!! WORKAROUND - needed in CC 2020 at least
-        // !!! These parameters aren't used by any foundation-based codecs, but if they're not present the match-source button
-        // !!! causes presets to become unusable
+
         exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_PixelAspectNumerator, &pixelAspectRatioNumerator);
         exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_PixelAspectDenominator, &pixelAspectRatioDenominator);
         exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_VideoFieldType, &fieldTypeP);
-        // !!! end workaround
 
         if (seqWidth.mInt32 == 0)
             seqWidth.mInt32 = 1920;

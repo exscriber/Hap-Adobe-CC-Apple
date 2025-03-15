@@ -1,6 +1,6 @@
 #include "../ui.h"
 
-#include "codec_registration.hpp"
+#include "codec.hpp"
 #import <Cocoa/Cocoa.h>
 #include <vector>
 #include "FNDControlViewController.h"
@@ -8,8 +8,8 @@
 #if !__has_feature(objc_arc)
 #error File requires compilation with ARC
 #endif
-#ifndef FOUNDATION_MACOSX_BUNDLE_GUI_IDENTIFIER
-#error FOUNDATION_MACOSX_BUNDLE_GUI_IDENTIFIER must be defined
+#ifndef BUNDLE_GUI_IDENTIFIER
+#error BUNDLE_GUI_IDENTIFIER must be defined
 #endif
 
 @class FND_OBJC(AEXViewController);
@@ -191,7 +191,7 @@ class UIView {
 public:
     UIView()
     : controller_([[FNDAEXViewController alloc] initWithNibName:@"SettingsViewController"
-                                                         bundle:[NSBundle bundleWithIdentifier:FOUNDATION_MACOSX_BUNDLE_GUI_IDENTIFIER]])
+                                                         bundle:[NSBundle bundleWithIdentifier:BUNDLE_GUI_IDENTIFIER]])
     {
         controller_.changeHandler = ^(FNDAEXViewController *view, FNDControlViewController *control) {
             this->validateChange(control.controlIdentifier);

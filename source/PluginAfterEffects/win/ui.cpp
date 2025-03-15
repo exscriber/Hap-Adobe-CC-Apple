@@ -6,7 +6,7 @@
 
 #include <Windows.h>
 
-#include "codec_registration.hpp"
+#include "codec.hpp"
 
 // dialog comtrols
 enum : int32_t {

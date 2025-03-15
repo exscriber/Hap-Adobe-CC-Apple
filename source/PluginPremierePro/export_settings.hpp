@@ -21,9 +21,6 @@ class CodecRegistry;
 
 typedef struct ExportSettings
 {
-	ExportSettings();
-	~ExportSettings();
-
 	csSDK_int32 fileType;
     std::unique_ptr<Exporter> exporter;
 	SPBasicSuite* spBasic;

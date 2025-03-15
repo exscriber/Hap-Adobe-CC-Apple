@@ -2,7 +2,7 @@
 #include <new>
 
 #include "async_importer.hpp"
-#include "codec_registration.hpp"
+#include "codec.hpp"
 #include "importer.hpp"
 #include "logging.hpp"
 #include "prstring.hpp"

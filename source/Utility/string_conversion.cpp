@@ -1,6 +1,8 @@
 #include "string_conversion.hpp"
 
 #ifdef __APPLE__
+// suppress deprecation warning for std::wstring_convert,std::codecvt
+#pragma clang diagnostic ignored "-Wdeprecated-declarations" 
 #include <codecvt>
 #include <CoreFoundation/CFString.h>
 #include <vector>

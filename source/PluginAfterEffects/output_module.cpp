@@ -5,7 +5,7 @@
 // for convenience
 using json = nlohmann::json;
 
-#include "codec_registration.hpp"
+#include "codec.hpp"
 #include "exporter.hpp"
 #include "logging.hpp"
 
@@ -1017,7 +1017,7 @@ EntryPointFunc(
                                                     &funcs));
 
     ERR(suites.UtilitySuite3()->AEGP_RegisterWithAEGP(	NULL,
-                                                       "NotchLC",
+                                                       "HAP", // TODO: change to variable
                                                        &S_mem_id));
 
     API_ERRORHANDLER_END();

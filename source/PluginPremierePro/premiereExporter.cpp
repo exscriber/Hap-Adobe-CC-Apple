@@ -1,6 +1,6 @@
 #include "configure.hpp"
 #include "logging.hpp"
-#include "main.hpp"
+#include "premiereExporter.hpp"
 #include "premiereParams.hpp"
 #include "prstring.hpp"
 #include "export_settings.hpp"
@@ -190,7 +190,7 @@ prMALError beginInstance(exportStdParms* stdParmsP, exExporterInstanceRec* insta
 	if (spBasic == nullptr)
 		return exportReturn_ErrMemory;
 
-	spError = spBasic->AcquireSuite(kPrSDKMemoryManagerSuite, kPrSDKMemoryManagerSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&memorySuite)));
+	spBasic->AcquireSuite(kPrSDKMemoryManagerSuite, kPrSDKMemoryManagerSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&memorySuite)));
 	void *settingsMem = (memorySuite->NewPtrClear(sizeof(ExportSettings)));
 
 	if (settingsMem == nullptr)
@@ -201,19 +201,19 @@ prMALError beginInstance(exportStdParms* stdParmsP, exExporterInstanceRec* insta
 	settings->fileType = instanceRecP->fileType;
 	settings->spBasic = spBasic;
 	settings->memorySuite = memorySuite;
-    spError = spBasic->AcquireSuite(kPrSDKExporterUtilitySuite, kPrSDKExporterUtilitySuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exporterUtilitySuite))));
-    spError = spBasic->AcquireSuite(kPrSDKExportParamSuite, kPrSDKExportParamSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exportParamSuite))));
-    spError = spBasic->AcquireSuite(kPrSDKExportProgressSuite, kPrSDKExportProgressSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exportProgressSuite))));
-	spError = spBasic->AcquireSuite(kPrSDKExportFileSuite, kPrSDKExportFileSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exportFileSuite))));
-	spError = spBasic->AcquireSuite(kPrSDKExportInfoSuite, kPrSDKExportInfoSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exportInfoSuite))));
-	spError = spBasic->AcquireSuite(kPrSDKErrorSuite, kPrSDKErrorSuiteVersion3, const_cast<const void**>(reinterpret_cast<void**>(&(settings->errorSuite))));
-	spError = spBasic->AcquireSuite(kPrSDKClipRenderSuite, kPrSDKClipRenderSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->clipRenderSuite))));
-	spError = spBasic->AcquireSuite(kPrSDKMarkerSuite, kPrSDKMarkerSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->markerSuite))));
-	spError = spBasic->AcquireSuite(kPrSDKPPixSuite, kPrSDKPPixSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->ppixSuite))));
-	spError = spBasic->AcquireSuite(kPrSDKTimeSuite, kPrSDKTimeSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->timeSuite))));
-    spError = spBasic->AcquireSuite(kPrSDKWindowSuite, kPrSDKWindowSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->windowSuite))));
-    spError = spBasic->AcquireSuite(kPrSDKAudioSuite, kPrSDKAudioSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->audioSuite))));
-    spError = spBasic->AcquireSuite(kPrSDKSequenceAudioSuite, kPrSDKSequenceAudioSuiteVersion1, const_cast<const void**>(reinterpret_cast<void**>(&(settings->sequenceAudioSuite))));
+    spBasic->AcquireSuite(kPrSDKExporterUtilitySuite, kPrSDKExporterUtilitySuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exporterUtilitySuite))));
+    spBasic->AcquireSuite(kPrSDKExportParamSuite, kPrSDKExportParamSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exportParamSuite))));
+    spBasic->AcquireSuite(kPrSDKExportProgressSuite, kPrSDKExportProgressSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exportProgressSuite))));
+	spBasic->AcquireSuite(kPrSDKExportFileSuite, kPrSDKExportFileSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exportFileSuite))));
+	spBasic->AcquireSuite(kPrSDKExportInfoSuite, kPrSDKExportInfoSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->exportInfoSuite))));
+	spBasic->AcquireSuite(kPrSDKErrorSuite, kPrSDKErrorSuiteVersion3, const_cast<const void**>(reinterpret_cast<void**>(&(settings->errorSuite))));
+	spBasic->AcquireSuite(kPrSDKClipRenderSuite, kPrSDKClipRenderSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->clipRenderSuite))));
+	spBasic->AcquireSuite(kPrSDKMarkerSuite, kPrSDKMarkerSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->markerSuite))));
+	spBasic->AcquireSuite(kPrSDKPPixSuite, kPrSDKPPixSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->ppixSuite))));
+	spBasic->AcquireSuite(kPrSDKTimeSuite, kPrSDKTimeSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->timeSuite))));
+    spBasic->AcquireSuite(kPrSDKWindowSuite, kPrSDKWindowSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->windowSuite))));
+    spBasic->AcquireSuite(kPrSDKAudioSuite, kPrSDKAudioSuiteVersion, const_cast<const void**>(reinterpret_cast<void**>(&(settings->audioSuite))));
+    spBasic->AcquireSuite(kPrSDKSequenceAudioSuite, kPrSDKSequenceAudioSuiteVersion1, const_cast<const void**>(reinterpret_cast<void**>(&(settings->sequenceAudioSuite))));
 
     // convenience callback
     auto report = settings->exporterUtilitySuite->ReportEvent;
@@ -798,22 +798,12 @@ static void renderAndWriteAllAudio(exDoExportRec *exportInfoP, prMALError &error
                                  int64_t(samplesRequested) * int64_t(numAudioChannels) * int64_t(kAudioSampleSizeOutput),
                                  samplesExported);
 
-        // Write audioBufferOut as separate samples
-        // auto buf = reinterpret_cast<const uint8_t *>(audioBufferOut);
-        // for (csSDK_int32 i = 0; i < samplesRequested; i++)
-        // {
-        //     csSDK_int32 offset = i * numAudioChannels * kAudioSampleSizeOutput;
-        //     exporter->writeAudioFrame(&buf[offset],
-        //                             numAudioChannels * kAudioSampleSizeOutput,
-        //                             samplesExported + i);
-        // }
-
         // Calculate remaining audio
         samplesExported += samplesRequested;
         samplesRemaining -= samplesRequested;
 
         // Update progress bar percent
-        progress = (float) samplesExported / totalAudioSamples * 0.06f;
+        progress = (float) samplesExported / totalAudioSamples;
         settings->exportProgressSuite->UpdateProgressPercent(exID, progress);
     }
     error = resultS;

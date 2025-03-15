@@ -18,7 +18,7 @@
 #include	"PrSDKMemoryManagerSuite.h"
 #include	"PrSDKWindowSuite.h"
 
-#include "codec_registration.hpp"
+#include "codec.hpp"
 #include "freelist.hpp"
 #include "importer.hpp"
 #include "movie_reader.hpp"

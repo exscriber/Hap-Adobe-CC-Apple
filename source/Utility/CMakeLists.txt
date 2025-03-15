@@ -1,26 +1,17 @@
-cmake_minimum_required(VERSION 3.15.0 FATAL_ERROR)
-project(AdobeShared)
+cmake_minimum_required(VERSION 3.31)
 
-set (CMAKE_CXX_STANDARD 17)
-
-# this is the one we will install
-add_library(AdobeShared
+add_library(Utility
+    string_conversion.hpp
     string_conversion.cpp
 )
 
-target_sources(AdobeShared
+target_include_directories(Utility
     PUBLIC
-        string_conversion.hpp
-)
-
-target_include_directories(AdobeShared
-    PRIVATE
-    INTERFACE
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
 find_library(CoreFoundation CoreFoundation)
 
-target_link_libraries(AdobeShared
+target_link_libraries(Utility
     $<$<PLATFORM_ID:Darwin>:${CoreFoundation}>
 )
