@@ -165,7 +165,7 @@ private:
 #ifdef WIN32
             OutputDebugString(full.str().c_str());
 #else
-            os_log_debug(OS_LOG_DEFAULT, "%s - %s", FOUNDATION_CODEC_NAME, full.str().c_str());
+            os_log_debug(OS_LOG_DEFAULT, "%s - %s", CODEC_NAME, full.str().c_str());
 #endif
         }
     }
@@ -173,7 +173,7 @@ private:
     void messageOutputLoop(PathType logPath, LoggerLocationStyle locationStyle)
     {
         PathType logFileName =
-            logPath / (FOUNDATION_CODEC_NAME "-log.txt");
+            logPath / (CODEC_NAME "-log.txt");
         std::ofstream out;
         if (logFileName != "")
             out.open(logFileName.c_str());

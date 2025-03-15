@@ -7,13 +7,13 @@ namespace fdn {
 PathType getConfigurationPath()
 {
     PathType path;
-    PWSTR programs;
-    HRESULT hr = SHGetKnownFolderPath(FOLDERID_ProgramFilesX64, 0, NULL, &programs);
+    PWSTR programFiles;
+    HRESULT hr = SHGetKnownFolderPath(FOLDERID_ProgramFilesX64, 0, NULL, &programFiles);
     if (SUCCEEDED(hr))
     {
-        path = programs;
-        path = path / "Adobe" / "Common" / "Plug-Ins" / "7.0" / "MediaCore" / FOUNDATION_CODEC_NAME;
-        CoTaskMemFree(programs);
+        path = programFiles;
+        path = path / "Adobe" / "Common" / "Plug-Ins" / "7.0" / "MediaCore" / CODEC_NAME;
+        CoTaskMemFree(programFiles);
         return path;
     }
     throw std::runtime_error("could not get program files path");

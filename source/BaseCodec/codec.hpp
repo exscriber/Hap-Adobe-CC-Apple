@@ -1,5 +1,4 @@
-#ifndef CODEC_REGISTRATION_H
-#define CODEC_REGISTRATION_H
+#pragma once
 
 #include <array>
 #include <functional>
@@ -102,6 +101,12 @@ enum CodecAlpha
 {
     withoutAlpha = 0,
     withAlpha = 1
+};
+
+enum class EncoderQuality {
+    Fast,
+    Normal,
+    Best
 };
 
 typedef std::array<char, 4> Codec4CC;
@@ -349,5 +354,3 @@ private:
 
     static std::string logName_;  // !!! simplification; should be moved; also assert thread safety [depend on CC for this atm]
 };
-
-#endif
