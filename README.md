@@ -1,35 +1,35 @@
-![logo](asset/hap-icon.png)
+# Hap Codec for Adobe CC on Apple Silicon
 
-# Hap Exporter for Adobe CC
+This is fork of https://github.com/disguise-one/hap-encoder-adobe-cc
 
-This is the community-supplied Hap and Hap Q exporter plugin for Adobe CC 2019 and Adobe CC 2020.
+Main focus of this repo: working plugins build for Apple Silicon platform.  
+Installer can be downloaded [here](https://github.com/exscriber/Hap-Adobe-CC-Apple/releases).
+
+## What is HAP
 
 HAP is a collection of high-performance codecs optimised for playback of multiple layers of video.
 
+HAP prioritises decode-speed, efficient upload to GPUs and GPU-side decoding to enable the highest amount of video content to be played back at once on modern hardware.
+
+Please see
+[http://hap.video](http://hap.video)
+for details.
+
 Exporter plugins are provided for
 - Adobe Media Encoder
-- Adobe Premiere
+- Adobe Premiere Pro
 - Adobe After Effects
 
-Please see [license.txt](license.txt) for the licenses of this plugin and the components used to create it.
+Please see [LICENSE](LICENSE) for the licenses of this plugin and the components used to create it.
 
-## Getting it
+## Compatibility
 
-An installer for the exporter can be downloaded [here](https://github.com/disguise-one/hap-encoder-adobe-cc/releases).
-
-## Requirements
-
-This codec has been tested on Windows 10 and macOS Catalina.
-
-It has been tested in Adobe CC 2019 and Adobe CC 2020.
-
-## Installation
-
-Run the provided installer.
+macOS 11+  
+This codec has been tested on macOS 15 Sequoia with Adobe CC 2024.
 
 ## Usage
 
-### Adobe Media Encoder and Adobe Premiere
+### Adobe Media Encoder and Adobe Premiere Pro
 
 After installation, the encoders will be available as the 'HAP Video' format when exporting in Adobe Media Encoder or Adobe Premiere
 
@@ -39,9 +39,9 @@ After choosing the format, codec options may be chosen.
 
 ![HAP codec options](doc/user_guide/codec-options.png)
 
-Default presets are supplied and are available in Adobe Media Encoder.
+<!-- Default presets are supplied and are available in Adobe Media Encoder.
 
-![HAP presets](doc/user_guide/media-encoder-presets.png)
+![HAP presets](doc/user_guide/media-encoder-presets.png) -->
 
 Movies that are encoded with the plugin are exported into .mov files.
 
@@ -49,7 +49,7 @@ Movies that are encoded with the plugin are exported into .mov files.
 
 The HAP codecs may be selected by choosing 'Quicktime HAP Format' on an output module.
 
-### Choosing the right codec for the job: Hap, Hap Alpha, Hap Q and Hap Q Alpha
+### Choosing the right codec for the job: Hap, Hap Alpha, Hap Q
 
 There are four different flavors of HAP to choose from when encoding your clips.
 
@@ -58,7 +58,6 @@ There are four different flavors of HAP to choose from when encoding your clips.
  Hap         | lowest data-rate and reasonable image quality                                    
  Hap Alpha   | same image quality as Hap, and supports an Alpha channel                         
  Hap Q       | improved image quality, at the expense of larger file sizes                      
- Hap Q Alpha | improved image quality and an Alpha channel, at the expense of larger file sizes 
 
 ### Codec parameters
 For Hap and Hap Alpha codecs render time can be reduced with Quality-Fast option. It uses fast and simple algorithm, but with reduced image quality.
@@ -74,29 +73,10 @@ An optional specified number of chunks size may be specified to optimize for ult
 
 At present, 'auto' corresponds to choosing 1 chunk per texture; this may change in the future.
 
-
-## What is HAP
-
-HAP is a collection of high-performance codecs optimised for playback of multiple layers of video.
-
-HAP prioritises decode-speed, efficient upload to GPUs and GPU-side decoding to enable the highest amount of video content to be played back at once on modern hardware.
-
-Please see
-
-[http://hap.video/](http://hap.video/)
-
-for details.
-
-## Known issues
-
-Performing multiple parallel exports in Media Encoder may cause the system to become unresponsive, although the operation should eventually complete.
-
-The plugin does not work in After Effects CC 2018.
-
 ## Development
 
 Please see the instructions for the Codec Foundation upon which these plugins are based:
-[https://github.com/codec-foundation/adobe-cc]
+[README-DEV.md](README-DEV.md)
 
 ## Credits
 
@@ -107,7 +87,9 @@ Principal contributors to this plugin are
 -  [Tom Butterworth](http://kriss.cx/tom)
 -  [Nick Zinovenko](https://github.com/exscriber)
 
-Development of this plugin was sponsored by [disguise](http://disguise.one), makers of the disguise show production software and hardware.
+Development of this plugin was sponsored by
+ - [disguise](http://disguise.one), makers of the disguise show production software and hardware.
+ - [10bitFX](http://notch.one), creators of the Notch VFX software
 
 The Hap codec was developed by Tom Butterworth with the support of [VIDVOX](https://vidvox.net).
 
