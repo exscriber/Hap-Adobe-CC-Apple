@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.31)
 
-project(HapCodec)
-
 add_library(HapCodec
         hap.c
         hap.h

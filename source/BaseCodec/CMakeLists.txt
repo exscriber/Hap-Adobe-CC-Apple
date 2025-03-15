@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.31)
-project(BaseCodec)
 
 if (APPLE)
     find_library(Foundation Foundation)
