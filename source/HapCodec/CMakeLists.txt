@@ -1,30 +1,34 @@
-cmake_minimum_required(VERSION 3.12.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.31)
 
-project(Codec)
+project(HapCodec)
 
-# this is the one we will install
-add_library(Codec
-        codec.cpp
-        codec.hpp
-        texture_converter.cpp
-        texture_converter.hpp
+add_library(HapCodec
+        hap.c
+        hap.h
+        ImageMath.c
+        ImageMath.h
+        YCoCg.c
+        YCoCg.h
+        YCoCgDXT.cpp
+        YCoCgDXT.h
+        HapEncoder.cpp
+        HapEncoder.hpp
+        SquishTextureConverter.cpp
+        TextureConverter.hpp
 )
 
-target_link_libraries(Codec
-    CodecRegistration
-    Hap
-    snappy
-    squish
-    ycocg
+target_include_directories(HapCodec
+    PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}
 )
 
-target_include_directories(Codec
-    PRIVATE
-    INTERFACE
-        CodecRegistration
-)
+find_package(Snappy CONFIG REQUIRED)
+find_package(unofficial-libsquish CONFIG REQUIRED)
+find_library(Accelerate Accelerate)
 
-# hack because squish CMakeLists.txt predates v3.4
-# TODO: fix the squish CMakeLists.txt
-list(APPEND INCLUDE_DIRS ${squish_SOURCE_DIR})
-include_directories(${INCLUDE_DIRS})
+target_link_libraries(HapCodec
+    BaseCodec
+    Snappy::snappy
+    unofficial::libsquish::squish
+    $<$<PLATFORM_ID:Darwin>:${Accelerate}>
+)

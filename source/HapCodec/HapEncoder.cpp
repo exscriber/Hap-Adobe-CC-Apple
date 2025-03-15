@@ -1,71 +1,81 @@
 #include <stdexcept>
 #include <string>
-#include <tmmintrin.h>
 
 #include "hap.h"
-
-#include "codec.hpp"
 #include "util.hpp"
+#include "HapEncoder.hpp"
 
 int roundUpToMultipleOf4(int n)
 {
     return (n + 3) & ~3;
 }
 
-const Codec4CC kHapCodecSubType{ 'H' , 'a', 'p', '1' };
-const Codec4CC kHapAlphaCodecSubType{ 'H', 'a', 'p', '5' };
-const Codec4CC kHapYCoCgCodecSubType{ 'H', 'a', 'p', 'Y' };
-const Codec4CC kHapYCoCgACodecSubType{ 'H', 'a', 'p', 'M' };
-const Codec4CC kHapAOnlyCodecSubType{ 'H', 'a', 'p', 'A' };
+const Codec4CC kHapCodecSubType{'H', 'a', 'p', '1'};
+const Codec4CC kHapAlphaCodecSubType{'H', 'a', 'p', '5'};
+const Codec4CC kHapYCoCgCodecSubType{'H', 'a', 'p', 'Y'};
+const Codec4CC kHapYCoCgACodecSubType{'H', 'a', 'p', 'M'};
+// const Codec4CC kHapAOnlyCodecSubType{'H', 'a', 'p', 'A'};
 
 const CodecDetails& CodecRegistry::details()
 {
     CodecNamedSubTypes hapCodecSubtypes{
         CodecNamedSubType{kHapCodecSubType, "Hap"},
         CodecNamedSubType{kHapAlphaCodecSubType, "Hap Alpha"},
-        CodecNamedSubType{kHapYCoCgCodecSubType,"Hap Q"},
-        CodecNamedSubType{kHapYCoCgACodecSubType,"Hap Q Alpha"},
-        CodecNamedSubType{kHapAOnlyCodecSubType, "Hap Alpha-Only"} };
-    
+        CodecNamedSubType{kHapYCoCgCodecSubType, "Hap Q"},
+        CodecNamedSubType{kHapYCoCgACodecSubType, "Hap Q Alpha"},
+        // CodecNamedSubType{kHapAOnlyCodecSubType, "Hap Alpha-Only"},
+    };
+
     static CodecDetails details{
-        "HAP", // productName
-        "HAP Movie", // fileFormatName;
-        "HAP", // fileFormatShortName;
-        "mov",  // videoFileExt
+        "HAP",                           // productName
+        "HAP Movie",                     // fileFormatName;
+        "HAP",                           // fileFormatShortName;
+        "mov",                           // videoFileExt
         FileFormat{'p', 'a', 'h', '\0'}, // fileFormat
         VideoFormat{'Y', 'P', 'A', 'H'}, // videoFormat
-        hapCodecSubtypes, // codecSubTypes
-        kHapAlphaCodecSubType, // defaultSubType
-        false,   // isHighBitDepth
-        false,  // hasExplicitIncludeAlphaChannel
-        true,   // hasChunkCount
+        hapCodecSubtypes,                // codecSubTypes
+        kHapCodecSubType,                // defaultSubType
+        false,                           // isHighBitDepth
+        false,                           // hasExplicitIncludeAlphaChannel
+        true,                            // hasChunkCount
         AlphaCodecDetails{
-            true,
-            { { kHapCodecSubType, withoutAlpha },
-              { kHapAlphaCodecSubType, withAlpha },
-              { kHapYCoCgCodecSubType, withoutAlpha },
-              { kHapYCoCgACodecSubType, withAlpha },
-              { kHapAOnlyCodecSubType, withAlpha } },
+            true, // hasPerSubtypeAlphaSupport
+            {
+                // alpha channel for codec SubTypes
+                {kHapCodecSubType, false},
+                {kHapAlphaCodecSubType, true},
+                {kHapYCoCgCodecSubType, false},
+                {kHapYCoCgACodecSubType, true},
+                // {kHapAOnlyCodecSubType, true},
+            },
         },
         QualityCodecDetails{
-            true,
-            { { kHapCodecSubType, true },
-              { kHapAlphaCodecSubType, true },
-              { kHapYCoCgCodecSubType, false },
-              { kHapYCoCgACodecSubType, false },
-              { kHapAOnlyCodecSubType, false } },  // presentForSubtype
-            { { kSquishEncoderFastQuality, "Fast" },
-              {kSquishEncoderNormalQuality, "Normal" } }, // descriptions
-            kSquishEncoderNormalQuality},  // defaultQuality
-        6,                        // premiereParamsVersion
-        "HAPSpecificCodecGroup",  // premiereGroupName
-        std::string(),            // premiereIncludeAlphaChannelNmae
-        "HAPChunkCount",          // premiereChunkCountName
-        'HAPP',                   // premiereSig [for afterEffects, must differ from afterEffectsSig]
-        'HAPA',                   // afterEffectsSig
-        'DTEK',                   // afterEffectsCreator
-        'HAP_',                   // afterEffectsType
-        'HAP_'                    // afterEffectsMacType
+            true, // hasQualityForAnySubType
+            {
+                // quality settings for codec SubTypes
+                {kHapCodecSubType, true},
+                {kHapAlphaCodecSubType, true},
+                {kHapYCoCgCodecSubType, false},
+                {kHapYCoCgACodecSubType, false},
+                // {kHapAOnlyCodecSubType, false},
+            },
+            {
+                // quality settings
+                {int(EncoderQuality::Fast), "Fast"},
+                {int(EncoderQuality::Normal), "Normal"},
+            },
+            // default quality setting
+            int(EncoderQuality::Normal),
+        },
+        6,                       // premiereParamsVersion
+        "HAPSpecificCodecGroup", // premiereGroupName
+        std::string(),           // premiereIncludeAlphaChannelNmae
+        "HAPChunkCount",         // premiereChunkCountName
+        'HAPP',                  // premiereSig [for afterEffects, must differ from afterEffectsSig]
+        'HAPA',                  // afterEffectsSig
+        'DTEK',                  // afterEffectsCreator
+        'HAP_',                  // afterEffectsType
+        'HAP_'                   // afterEffectsMacType
     };
 
     return details;
@@ -116,7 +126,7 @@ HapEncoder::HapEncoder(std::unique_ptr<EncoderParametersBase>& params)
       textureFormats_(getTextureFormats(parameters().codec4CC)),
       compressors_{ HapCompressorSnappy, HapCompressorSnappy }
 {
-    SquishEncoderQuality quality = (SquishEncoderQuality)parameters().quality;
+    EncoderQuality quality = (EncoderQuality)parameters().quality;
     for (size_t i = 0; i < count_; ++i)
     {
         converters_[i] = TextureConverter::create(parameters().frameSize, textureFormats_[i], quality);
@@ -147,21 +157,21 @@ std::unique_ptr<EncoderJob> HapEncoder::create()
 
 std::array<unsigned int, 2> HapEncoder::getTextureFormats(Codec4CC subType)
 {
-    if (subType == kHapCodecSubType) {
-        return { HapTextureFormat_RGB_DXT1 };
-    }
-    else if (subType == kHapAlphaCodecSubType) {
-        return { HapTextureFormat_RGBA_DXT5 };
-    }
-    else if (subType == kHapYCoCgCodecSubType) {
-        return { HapTextureFormat_YCoCg_DXT5 };
-    }
-    else if (subType == kHapYCoCgACodecSubType) {
-        return { HapTextureFormat_YCoCg_DXT5, HapTextureFormat_A_RGTC1 };
-    }
-    else if (subType == kHapAOnlyCodecSubType) {
-        return { HapTextureFormat_A_RGTC1 };
-    }
+    if (subType == kHapCodecSubType)
+        return {HapTextureFormat_RGB_DXT1};
+
+    else if (subType == kHapAlphaCodecSubType)
+        return {HapTextureFormat_RGBA_DXT5};
+
+    else if (subType == kHapYCoCgCodecSubType)
+        return {HapTextureFormat_YCoCg_DXT5};
+
+    else if (subType == kHapYCoCgACodecSubType)
+        return {HapTextureFormat_YCoCg_DXT5, HapTextureFormat_A_RGTC1};
+
+    // else if (subType == kHapAOnlyCodecSubType)
+    //     return {HapTextureFormat_A_RGTC1};
+
     else
         throw std::runtime_error("unknown codec");
 }

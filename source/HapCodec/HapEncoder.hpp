@@ -6,9 +6,9 @@
 #include <memory>
 #include <vector>
 
-#include "codec_registration.hpp"
+#include "codec.hpp"
 
-#include "texture_converter.hpp"
+#include "TextureConverter.hpp"
 
 // Placeholders for inputs, processing and outputs for encode process
 

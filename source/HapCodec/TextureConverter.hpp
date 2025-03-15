@@ -6,13 +6,7 @@
 #include <memory>
 #include <vector>
 
-#include "codec_registration.hpp"
-
-enum SquishEncoderQuality {
-    kSquishEncoderFastQuality = 0,
-    kSquishEncoderNormalQuality = 1,
-    kSquishEncoderBestQuality = 2
-};
+#include "codec.hpp"
 
 // texture conversion from adobe-preferred to hap_encode required
 // these converters all use squish as the final stage
@@ -24,7 +18,7 @@ public:
 	{}
 	virtual ~TextureConverter();
 
-	static std::unique_ptr<TextureConverter> create(const FrameSize& frameSize, unsigned int destFormat, SquishEncoderQuality quality);
+	static std::unique_ptr<TextureConverter> create(const FrameSize& frameSize, unsigned int destFormat, EncoderQuality quality);
 
 	const FrameSize& frameSize() const { return frameSize_; }
 

@@ -1,8 +1,8 @@
 #include <stdexcept>
 
-#include "texture_converter.hpp"
 #include "hap.h"
 #include "squish.h"
+#include "TextureConverter.hpp"
 
 extern "C" {
 #include "YCoCg.h"
@@ -97,17 +97,18 @@ size_t TextureConverter::size() const
 }
 
 
-std::unique_ptr<TextureConverter> TextureConverter::create(const FrameSize& frameSize, unsigned int destFormat, SquishEncoderQuality quality)
+std::unique_ptr<TextureConverter> TextureConverter::create(const FrameSize& frameSize, unsigned int destFormat, EncoderQuality quality)
 {
 	int flag_quality;
 	switch (quality)
 	{
-	case kSquishEncoderFastQuality:
+	case EncoderQuality::Fast:
 		flag_quality = squish::kColourRangeFit;
 		break;
-	case kSquishEncoderBestQuality:
+	case EncoderQuality::Best:
 		flag_quality = squish::kColourIterativeClusterFit;
 		break;
+	case EncoderQuality::Normal:
 	default:
 		flag_quality = squish::kColourClusterFit;
 		break;
@@ -121,8 +122,8 @@ std::unique_ptr<TextureConverter> TextureConverter::create(const FrameSize& fram
 		return std::make_unique<SquishTextureConverter>(frameSize, squish::kDxt5 | flag_quality);
 	case HapTextureFormat_YCoCg_DXT5:
 		return std::make_unique<TextureConverterToYCoCg_Dxt5>(frameSize);
-	case HapTextureFormat_A_RGTC1:
-		return std::make_unique<SquishTextureConverter>(frameSize, squish::kRgtc1A);
+	// case HapTextureFormat_A_RGTC1:
+	// 	return std::make_unique<SquishTextureConverter>(frameSize, squish::kRgtc1A);
 	default:
 		throw std::runtime_error("unknown conversion");
 	}
