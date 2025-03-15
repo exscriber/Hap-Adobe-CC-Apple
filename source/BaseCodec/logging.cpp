@@ -172,11 +172,12 @@ private:
 
     void messageOutputLoop(PathType logPath, LoggerLocationStyle locationStyle)
     {
+        if ( logPath.empty() ) return;
+        
         PathType logFileName =
             logPath / (CODEC_NAME "-log.txt");
         std::ofstream out;
-        if (logFileName != "")
-            out.open(logFileName.c_str());
+        out.open(logFileName.c_str());
 
         while (!quit_)
         {
