@@ -47,22 +47,22 @@ ImporterInit(
     csSDK_int32 premiereSig = reinterpret_cast<const csSDK_int32&>(CodecRegistry::codec()->details().premiereSig);
     importInfo->importerType = premiereSig;
 
-    importInfo->setupOnDblClk = kPrFalse;
-    importInfo->canSave = kPrFalse;
+    importInfo->setupOnDblClk = false;
+    importInfo->canSave = false;
 
     // imDeleteFile8 is broken on MacOS when renaming a file using the Save Captured Files dialog
     // So it is not recommended to set this on MacOS yet (bug 1627325)
 
-    importInfo->canDelete = kPrFalse;
-    importInfo->dontCache = kPrFalse;		// Don't let Premiere cache these files
-    importInfo->hasSetup = kPrFalse;		// Set to kPrTrue if you have a setup dialog
-    importInfo->keepLoaded = kPrFalse;		// If you MUST stay loaded use, otherwise don't: play nice
+    importInfo->canDelete = false;
+    importInfo->dontCache = false;		// Don't let Premiere cache these files
+    importInfo->hasSetup = false;		// Set to true if you have a setup dialog
+    importInfo->keepLoaded = false;		// If you MUST stay loaded use, otherwise don't: play nice
     importInfo->priority = 100;
-    importInfo->canTrim = kPrFalse;
-    importInfo->canCalcSizes = kPrFalse;
+    importInfo->canTrim = false;
+    importInfo->canCalcSizes = false;
     if (stdParms->imInterfaceVer >= IMPORTMOD_VERSION_6)
     {
-        importInfo->avoidAudioConform = kPrTrue;
+        importInfo->avoidAudioConform = true;
     }
 
     return imIsCacheable;
@@ -76,7 +76,7 @@ ImporterGetPrefs8(
 {
     ImporterLocalRec8   *ldata;
 
-    // Note: if canOpen is not set to kPrTrue, I'm not getting this selector. Why?
+    // Note: if canOpen is not set to true, I'm not getting this selector. Why?
     // Answer: because this selector is associated directly with "hasSetup"
 
     if(prefsRec->prefsLength == 0)
@@ -211,7 +211,7 @@ ImporterGetIndFormat(
         FileFormat fileFormat = codec.details().fileFormat;
         indFormatRec->filetype = reinterpret_cast<csSDK_int32&>(fileFormat);
 
-        indFormatRec->canWriteTimecode    = kPrTrue;
+        indFormatRec->canWriteTimecode    = true;
 
         #ifdef PRWIN_ENV
         strcpy_s(indFormatRec->FormatName, sizeof (indFormatRec->FormatName), codec.details().fileFormatName.c_str());                 // The long name of the importer
@@ -292,7 +292,7 @@ GetInfoAudio(
 
     if((*ldataH)->movieReader->hasAudio())
     {
-        SDKFileInfo8->hasAudio                = kPrTrue;
+        SDKFileInfo8->hasAudio                = true;
 
         auto audioDef = (*ldataH)->movieReader->audioDef();
 
@@ -312,7 +312,7 @@ GetInfoAudio(
     }
     else
     {
-        SDKFileInfo8->hasAudio = kPrFalse;
+        SDKFileInfo8->hasAudio = false;
     }
     return returnValue;
 }
@@ -344,10 +344,10 @@ ImporterGetInfo8(
         fileInfo8->accessModes = kRandomAccessImport;
     }
 
-    fileInfo8->vidInfo.supportsAsyncIO            = kPrTrue;
-    fileInfo8->vidInfo.supportsGetSourceVideo    = kPrTrue;
-    fileInfo8->vidInfo.hasPulldown               = kPrFalse;
-    fileInfo8->hasDataRate                       = kPrFalse; //!!! should be able to do thiskPrTrue;
+    fileInfo8->vidInfo.supportsAsyncIO            = true;
+    fileInfo8->vidInfo.supportsGetSourceVideo    = true;
+    fileInfo8->vidInfo.hasPulldown               = false;
+    fileInfo8->hasDataRate                       = false; //!!! should be able to do thistrue;
 
     // Get a handle to our private data.  If it doesn't exist, allocate one
     // so we can use it to store our file instance info
@@ -371,7 +371,7 @@ ImporterGetInfo8(
     (*ldataH)->adobe = std::make_unique<AdobeImporterAPI>(stdParms->piSuites);
 
     // Get video info from header
-    fileInfo8->hasVideo = kPrTrue;
+    fileInfo8->hasVideo = true;
     fileInfo8->vidInfo.subType     = (const csSDK_int32 &)(CodecRegistry::codec()->details().videoFormat);
     fileInfo8->vidInfo.imageWidth  = (*ldataH)->movieReader->width();
     fileInfo8->vidInfo.imageHeight = (*ldataH)->movieReader->height();

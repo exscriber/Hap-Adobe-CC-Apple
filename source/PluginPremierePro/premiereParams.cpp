@@ -48,11 +48,11 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
     if (exportParamSuite)
     {
         exportParamSuite->AddMultiGroup(exporterPluginID, &mgroupIndex);
-        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBETopParamGroup, ADBEVideoTabGroup, StringForPr(TOP_VIDEO_PARAM_GROUP_NAME), kPrFalse, kPrFalse, kPrFalse);
-        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEVideoTabGroup, ADBEVideoCodecGroup, StringForPr(VIDEO_CODEC_PARAM_GROUP_NAME), kPrFalse, kPrFalse, kPrFalse);
-        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEVideoTabGroup, ADBEBasicVideoGroup, StringForPr(BASIC_VIDEO_PARAM_GROUP_NAME), kPrFalse, kPrFalse, kPrFalse);
+        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBETopParamGroup, ADBEVideoTabGroup, StringForPr(TOP_VIDEO_PARAM_GROUP_NAME), false, false, false);
+        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEVideoTabGroup, ADBEVideoCodecGroup, StringForPr(VIDEO_CODEC_PARAM_GROUP_NAME), false, false, false);
+        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEVideoTabGroup, ADBEBasicVideoGroup, StringForPr(BASIC_VIDEO_PARAM_GROUP_NAME), false, false, false);
 
-        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEVideoTabGroup, codec.details().premiereGroupName.c_str(), StringForPr(CODEC_SPECIFIC_PARAM_GROUP_NAME), kPrFalse, kPrFalse, kPrFalse);
+        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEVideoTabGroup, codec.details().premiereGroupName.c_str(), StringForPr(CODEC_SPECIFIC_PARAM_GROUP_NAME), false, false, false);
         exNewParamInfo widthParam;
         exParamValues widthValues;
 		SDKStringConvert::to_buffer(ADBEVideoWidth, widthParam.identifier);
@@ -61,8 +61,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         widthValues.rangeMin.intValue = 16;
         widthValues.rangeMax.intValue = 16384;
         widthValues.value.intValue = seqWidth.mInt32;
-        widthValues.disabled = kPrFalse;
-        widthValues.hidden = kPrFalse;
+        widthValues.disabled = false;
+        widthValues.hidden = false;
         widthParam.paramValues = widthValues;
         exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &widthParam);
 
@@ -74,8 +74,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         heightValues.rangeMin.intValue = 16;
         heightValues.rangeMax.intValue = 16384;
         heightValues.value.intValue = seqHeight.mInt32;
-        heightValues.disabled = kPrFalse;
-        heightValues.hidden = kPrFalse;
+        heightValues.disabled = false;
+        heightValues.hidden = false;
         heightParam.paramValues = heightValues;
         exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &heightParam);
         if (codec.details().hasExplicitIncludeAlphaChannel)
@@ -88,9 +88,9 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
             includeAlphaValues.rangeMin.intValue = 0;
             includeAlphaValues.rangeMax.intValue = 1;
             includeAlphaValues.value.intValue = 0;
-            includeAlphaValues.disabled = kPrFalse;
-            includeAlphaValues.hidden = kPrFalse;
-            includeAlphaValues.disabled = kPrFalse;
+            includeAlphaValues.disabled = false;
+            includeAlphaValues.hidden = false;
+            includeAlphaValues.disabled = false;
             includeAlphaParam.paramValues = includeAlphaValues;
             exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &includeAlphaParam);
         }
@@ -106,8 +106,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
             hapSubcodecValues.rangeMax.intValue = 4;
             auto temp = codec.details().defaultSubType;
             hapSubcodecValues.value.intValue = reinterpret_cast<int32_t&>(temp); //!!! seqHapSubcodec.mInt32;
-            hapSubcodecValues.disabled = kPrFalse;
-            hapSubcodecValues.hidden = kPrFalse;
+            hapSubcodecValues.disabled = false;
+            hapSubcodecValues.hidden = false;
             hapSubcodecParam.paramValues = hapSubcodecValues;
             exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &hapSubcodecParam);
         }
@@ -120,8 +120,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         frameRateValues.rangeMin.timeValue = 1;
         timeSuite->GetTicksPerSecond(&frameRateValues.rangeMax.timeValue);
         frameRateValues.value.timeValue = seqFrameRate.mInt64;
-        frameRateValues.disabled = kPrFalse;
-        frameRateValues.hidden = kPrFalse;
+        frameRateValues.disabled = false;
+        frameRateValues.hidden = false;
         frameRateParam.paramValues = frameRateValues;
         exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &frameRateParam);
 
@@ -138,8 +138,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         parValues.rangeMax.ratioValue.denominator = 1;
         parValues.value.ratioValue.numerator = pixelAspectRatioNumerator.mInt32;
         parValues.value.ratioValue.denominator = pixelAspectRatioDenominator.mInt32;
-        parValues.disabled = kPrFalse;
-        parValues.hidden = kPrTrue;   // !!! because this is only present to avoid preset corruption
+        parValues.disabled = false;
+        parValues.hidden = true;   // !!! because this is only present to avoid preset corruption
 
         exNewParamInfo parParam;
         parParam.structVersion = 1;
@@ -157,8 +157,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         exParamValues fieldOrderValues;
         fieldOrderValues.structVersion = 1;
         fieldOrderValues.value.intValue = fieldTypeP.mInt32;
-        fieldOrderValues.disabled = kPrFalse;
-        fieldOrderValues.hidden = kPrTrue;  // !!! because this only present to avoid preset corruption
+        fieldOrderValues.disabled = false;
+        fieldOrderValues.hidden = true;  // !!! because this only present to avoid preset corruption
 
         exNewParamInfo fieldOrderParam;
         fieldOrderParam.structVersion = 1;
@@ -179,8 +179,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
             chunkCountValues.rangeMin.intValue = k_chunkingMin;
             chunkCountValues.rangeMax.intValue = k_chunkingMax;
             chunkCountValues.value.intValue = 1;
-            chunkCountValues.disabled = kPrFalse;
-            chunkCountValues.hidden = kPrFalse;
+            chunkCountValues.disabled = false;
+            chunkCountValues.hidden = false;
             chunkCountParam.paramValues = chunkCountValues;
             exportParamSuite->AddParam(exporterPluginID, mgroupIndex, codec.details().premiereGroupName.c_str(), &chunkCountParam);
         }
@@ -200,15 +200,15 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
             qualityValues.rangeMin.intValue = worst;
             qualityValues.rangeMax.intValue = best;
             qualityValues.value.intValue = codec.details().quality.defaultQuality;
-            qualityValues.disabled = kPrFalse;
-            qualityValues.hidden = kPrFalse;
+            qualityValues.disabled = false;
+            qualityValues.hidden = false;
             qualityParam.paramValues = qualityValues;
             exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &qualityParam);
         }
 
         // Audio parameters
-        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBETopParamGroup, ADBEAudioTabGroup, StringForPr(TOP_AUDIO_PARAM_GROUP_NAME), kPrFalse, kPrFalse, kPrFalse);
-        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEAudioTabGroup, ADBEBasicAudioGroup, StringForPr(BASIC_AUDIO_PARAM_GROUP_NAME), kPrFalse, kPrFalse, kPrFalse);
+        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBETopParamGroup, ADBEAudioTabGroup, StringForPr(TOP_AUDIO_PARAM_GROUP_NAME), false, false, false);
+        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEAudioTabGroup, ADBEBasicAudioGroup, StringForPr(BASIC_AUDIO_PARAM_GROUP_NAME), false, false, false);
 
         // Sample rate
         exNewParamInfo sampleRateParam;
@@ -217,8 +217,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         sampleRateParam.paramType = exParamType_float;
         sampleRateParam.flags = exParamFlag_none;
         sampleRateValues.value.floatValue = 44100.0f; // disguise servers default samplerate
-        sampleRateValues.disabled = kPrFalse;
-        sampleRateValues.hidden = kPrFalse;
+        sampleRateValues.disabled = false;
+        sampleRateValues.hidden = false;
         sampleRateParam.paramValues = sampleRateValues;
         exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicAudioGroup, &sampleRateParam);
         
@@ -229,8 +229,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         channelTypeParam.paramType = exParamType_int;
         channelTypeParam.flags = exParamFlag_none;
         channelTypeValues.value.intValue = kPrAudioChannelType_Stereo;
-        channelTypeValues.disabled = kPrFalse; // TODO in Release disable to simplify user expirience: only stereo
-        channelTypeValues.hidden = kPrFalse;
+        channelTypeValues.disabled = false; // TODO in Release disable to simplify user expirience: only stereo
+        channelTypeValues.hidden = false;
         channelTypeParam.paramValues = channelTypeValues;
         exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicAudioGroup, &channelTypeParam);
 
@@ -382,8 +382,8 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
         settings->exportParamSuite->GetParamValue(exID, 0, ADBEVideoQuality, &qualityValues);
         qualityValues.rangeMin.intValue = worst;
         qualityValues.rangeMax.intValue = best;
-        qualityValues.disabled = kPrFalse;
-        qualityValues.hidden = kPrFalse;
+        qualityValues.disabled = false;
+        qualityValues.hidden = false;
         settings->exportParamSuite->ChangeParam(exID, 0, ADBEVideoQuality, &qualityValues);
 
         settings->exportParamSuite->ClearConstrainedValues(exID, 0, ADBEVideoQuality);
@@ -420,8 +420,8 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
         settings->exportParamSuite->GetParamValue(exID, 0, codec.details().premiereChunkCountName.c_str(), &chunkCountValues);
         chunkCountValues.rangeMin.intValue = k_chunkingMin;
         chunkCountValues.rangeMax.intValue = k_chunkingMax;
-        chunkCountValues.disabled = kPrFalse;
-        chunkCountValues.hidden = kPrFalse;
+        chunkCountValues.disabled = false;
+        chunkCountValues.hidden = false;
         settings->exportParamSuite->ChangeParam(exID, 0, codec.details().premiereChunkCountName.c_str(), &chunkCountValues);
     }
 
@@ -536,8 +536,8 @@ prMALError validateParamChanged(exportStdParms *stdParmsP, exParamChangedRec *va
         settings->exportParamSuite->GetParamValue(exID, 0, ADBEVideoQuality, &qualityValues);
         qualityValues.rangeMin.intValue = worst;
         qualityValues.rangeMax.intValue = best;
-        qualityValues.disabled = kPrFalse;
-        qualityValues.hidden = kPrFalse;
+        qualityValues.disabled = false;
+        qualityValues.hidden = false;
         settings->exportParamSuite->ChangeParam(exID, 0, ADBEVideoQuality, &qualityValues);
 
         if (codec.details().subtypes.size()) {
@@ -559,8 +559,8 @@ prMALError validateParamChanged(exportStdParms *stdParmsP, exParamChangedRec *va
         settings->exportParamSuite->GetParamValue(exID, 0, codec.details().premiereChunkCountName.c_str(), &chunkCountValues);
         chunkCountValues.rangeMin.intValue = k_chunkingMin;
         chunkCountValues.rangeMax.intValue = k_chunkingMax;
-        chunkCountValues.disabled = kPrFalse;
-        chunkCountValues.hidden = kPrFalse;
+        chunkCountValues.disabled = false;
+        chunkCountValues.hidden = false;
         settings->exportParamSuite->ChangeParam(exID, 0, codec.details().premiereChunkCountName.c_str(), &chunkCountValues);
     }
 

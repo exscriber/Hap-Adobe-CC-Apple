@@ -548,22 +548,22 @@ AEIO_StartAdding(
             CodecAlpha codecAlpha;
             switch (depth) {
             case 24:
-                codecAlpha = withoutAlpha;
+                codecAlpha = false;
                 break;
             case 32:
-                codecAlpha = withAlpha;
+                codecAlpha = true;
                 break;
             case 48:
-                codecAlpha = withoutAlpha;
+                codecAlpha = false;
                 break;
             case 64:
-                codecAlpha = withAlpha;
+                codecAlpha = true;
                 break;
             case 96:
-                codecAlpha = withoutAlpha;
+                codecAlpha = false;
                 break;
             case 128:
-                codecAlpha = withAlpha;
+                codecAlpha = true;
                 break;
             default:
                 throw std::runtime_error("unsupported depth");

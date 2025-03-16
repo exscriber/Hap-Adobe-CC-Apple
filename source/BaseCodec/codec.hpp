@@ -97,11 +97,7 @@ struct DecodeInput
     std::vector<uint8_t> buffer;
 };
 
-enum CodecAlpha
-{
-    withoutAlpha = 0,
-    withAlpha = 1
-};
+typedef bool CodecAlpha;
 
 enum class EncoderQuality {
     Fast,
@@ -231,7 +227,7 @@ public:
     virtual ~Encoder() {};
 
     const EncoderParametersBase& parameters() const { return *parameters_; }
-    int encodedBitDepth() const { return (parameters_->alpha == withoutAlpha) ? 24 : 32; }
+    int encodedBitDepth() const { return (parameters_->alpha == false) ? 24 : 32; }
 
     virtual std::unique_ptr<EncoderJob> create()=0;
 

@@ -162,16 +162,16 @@ prMALError startup(exportStdParms* stdParms, exExporterInfoRec* infoRec)
 
         infoRec->classID = reinterpret_cast<const uint32_t &>(codec.details().videoFormat);
         infoRec->fileType = reinterpret_cast<const uint32_t&>(codec.details().fileFormat);
-        infoRec->hideInUI = kPrFalse;
-        infoRec->isCacheable = kPrFalse;
+        infoRec->hideInUI = false;
+        infoRec->isCacheable = false;
         infoRec->exportReqIndex = 0;
-        infoRec->canExportVideo = kPrTrue;
-        infoRec->canExportAudio = kPrTrue;
-        infoRec->canEmbedCaptions = kPrFalse;
-        infoRec->canConformToMatchParams = kPrTrue;
-        infoRec->singleFrameOnly = kPrFalse;
-        infoRec->wantsNoProgressBar = kPrFalse;
-        infoRec->doesNotSupportAudioOnly = kPrTrue;
+        infoRec->canExportVideo = true;
+        infoRec->canExportAudio = true;
+        infoRec->canEmbedCaptions = false;
+        infoRec->canConformToMatchParams = true;
+        infoRec->singleFrameOnly = false;
+        infoRec->wantsNoProgressBar = false;
+        infoRec->doesNotSupportAudioOnly = true;
         infoRec->interfaceVersion = EXPORTMOD_VERSION;
 		SDKStringConvert::to_buffer(codec.details().fileFormatName, infoRec->fileTypeName);
 		SDKStringConvert::to_buffer(codec.details().videoFileExt, infoRec->fileTypeDefaultExtension);
@@ -333,7 +333,7 @@ static EncoderSettings getVideoEncoderSettings(PrSDKExportParamSuite* paramSuite
         videoFormat = codec.details().videoFormat;
     }
 
-    CodecAlpha alpha{ withAlpha };
+    CodecAlpha alpha{ true };
     auto codecAlphaDetails = codec.details().alpha;
     if (codecAlphaDetails.hasPerSubtypeAlphaSupport) {
         alpha = codecAlphaDetails.subtypeAlphaSupport[videoFormat];
@@ -342,7 +342,7 @@ static EncoderSettings getVideoEncoderSettings(PrSDKExportParamSuite* paramSuite
         if (hasExplicitAlphaChannel) {
             exParamValues includeAlphaChannel;
             paramSuite->GetParamValue(exID, 0, codec.details().premiereIncludeAlphaChannelName.c_str(), &includeAlphaChannel);
-            alpha = includeAlphaChannel.value.intValue ? withAlpha : withoutAlpha;
+            alpha = includeAlphaChannel.value.intValue ? true : false;
         }
     };
 
@@ -555,7 +555,7 @@ void exportLoop(exDoExportRec* exportInfoP, prMALError& error)
     auto isHighBitDepth = CodecRegistry::codec()->details().isHighBitDepth;
     auto [alpha, videoFormat, quality] = getVideoEncoderSettings(settings->exportParamSuite, exID);
     renderParams.inFinalPixelFormat = 
-        (alpha==withAlpha) ? (isHighBitDepth
+        (alpha==true) ? (isHighBitDepth
                               ? PrPixelFormat_BGRA_4444_16u // PrPixelFormat_BGRA_4444_32f
                               : PrPixelFormat_BGRA_4444_8u)
                            : (isHighBitDepth
@@ -786,7 +786,7 @@ static void renderAndWriteAllAudio(exDoExportRec *exportInfoP, prMALError &error
             samplesRequested = (csSDK_int32)samplesRemaining;
 
         // Fill the buffer with audio
-        resultS = settings->sequenceAudioSuite->GetAudio(audioRenderID, samplesRequested, audioBuffer, kPrFalse);
+        resultS = settings->sequenceAudioSuite->GetAudio(audioRenderID, samplesRequested, audioBuffer, false);
         if (resultS != malNoError)
             break;
 
