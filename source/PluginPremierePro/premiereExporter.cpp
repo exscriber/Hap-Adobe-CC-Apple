@@ -20,8 +20,9 @@ csSDK_int32 GetNumberOfAudioChannels(csSDK_int32 audioChannelType);
 static void renderAndWriteAllAudio(exDoExportRec *exportInfoP, prMALError &error, Exporter& exporter);
 
 // For SEH and stack dump on win32 this is called from an SEH wrapper
-prMALError wrapped_xSDKExport(csSDK_int32 selector, exportStdParms* stdParmsP, void* param1, void* param2)
+prMALError wrapped_xSDKExport(csSDK_int32 selector_, exportStdParms* stdParmsP, void* param1, void* param2)
 {
+    auto selector = static_cast<PrExportSelector>(selector_);
     prMALError result = exportReturn_Unsupported;
     
     FDN_DEBUG("xSDKExport selector=", selector);

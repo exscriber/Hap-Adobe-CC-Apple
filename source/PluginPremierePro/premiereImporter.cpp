@@ -608,11 +608,12 @@ ImporterCreateAsyncImporter(
 }
 
 PREMPLUGENTRY DllExport xImportEntry (
-    csSDK_int32      selector,
+    csSDK_int32      selector_,
     imStdParms      *stdParms, 
     void            *param1, 
     void            *param2)
 {
+    auto selector = static_cast<PrImporterSelector>(selector_);
     FDN_DEBUG("xImportEntry selector=", selector);
 
     prMALError result = imUnsupported;
@@ -785,6 +786,9 @@ PREMPLUGENTRY DllExport xImportEntry (
             FDN_DEBUG("imCreateAsyncImporter");
             result = ImporterCreateAsyncImporter(stdParms,
                 reinterpret_cast<imAsyncImporterCreationRec*>(param1));
+            break;
+
+        default:
             break;
         }
     }
