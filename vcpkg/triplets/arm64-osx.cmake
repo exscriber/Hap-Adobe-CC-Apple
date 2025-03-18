@@ -6,4 +6,7 @@ set(VCPKG_CMAKE_SYSTEM_NAME Darwin)
 set(VCPKG_OSX_ARCHITECTURES arm64)
 set(VCPKG_OSX_DEPLOYMENT_TARGET 11)
 
+set(VCPKG_C_FLAGS "-fvisibility=hidden")
+set(VCPKG_CXX_FLAGS "-fvisibility=hidden")
+
 set(VCPKG_BUILD_TYPE release)
