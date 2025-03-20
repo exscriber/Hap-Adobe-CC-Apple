@@ -12,8 +12,7 @@ const std::string kConfigFilename{"config.json"};
 namespace fdn
 {
 
-static std::string defaultLoad()
-{
+static std::string defaultConfig() {
     return R"({
     })";         //!!! might put metaconfig information here - where loaded from
                  //!!! checkout hash etc
@@ -32,7 +31,7 @@ static json load()
         }
         in >> loaded;
     } catch (...) {
-        loaded = json::parse(defaultLoad());
+        loaded = json::parse(defaultConfig());
     }
     return loaded;
 }
