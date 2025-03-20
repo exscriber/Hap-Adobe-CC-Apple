@@ -1,0 +1,27 @@
+BasedOnStyle: LLVM
+
+UseTab: Never
+TabWidth: 4
+IndentWidth: 4
+ColumnLimit: 0
+
+MaxEmptyLinesToKeep: 2
+AccessModifierOffset: -4
+
+SortIncludes: Never
+BreakBeforeBraces: Attach
+
+DerivePointerAlignment: True
+PointerAlignment: Left
+# ReferenceAlignment: Pointer
+
+AlignTrailingComments: Always
+# SpacesBeforeTrailingComments: 2
+
+AlignAfterOpenBracket: Align
+# AlignArrayOfStructures: Left
+
+AlignConsecutiveMacros: AcrossEmptyLines
+# AlignConsecutiveAssignments: Consecutive
+
+AllowShortIfStatementsOnASingleLine: WithoutElse
