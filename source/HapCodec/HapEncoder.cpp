@@ -28,7 +28,7 @@ const CodecDetails& CodecRegistry::details()
 
     static CodecDetails details{
         "HAP",                           // productName
-        "HAP Movie",                     // fileFormatName;
+        "HAP Classic",                   // fileFormatName;
         "HAP",                           // fileFormatShortName;
         "mov",                           // videoFileExt
         FileFormat{'p', 'a', 'h', '\0'}, // fileFormat

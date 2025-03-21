@@ -173,7 +173,7 @@ prMALError startup(exportStdParms* stdParms, exExporterInfoRec* infoRec)
         infoRec->wantsNoProgressBar = kPrFalse;
         infoRec->doesNotSupportAudioOnly = kPrTrue;
         infoRec->interfaceVersion = EXPORTMOD_VERSION;
-		SDKStringConvert::to_buffer(codec.logName(), infoRec->fileTypeName);
+		SDKStringConvert::to_buffer(codec.details().fileFormatName, infoRec->fileTypeName);
 		SDKStringConvert::to_buffer(codec.details().videoFileExt, infoRec->fileTypeDefaultExtension);
         return exportReturn_IterateExporter;
     }
