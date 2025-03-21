@@ -5,11 +5,6 @@
 #include "util.hpp"
 #include "HapEncoder.hpp"
 
-int roundUpToMultipleOf4(int n)
-{
-    return (n + 3) & ~3;
-}
-
 const Codec4CC kHapCodecSubType{'H', 'a', 'p', '1'};
 const Codec4CC kHapAlphaCodecSubType{'H', 'a', 'p', '5'};
 const Codec4CC kHapYCoCgCodecSubType{'H', 'a', 'p', 'Y'};
