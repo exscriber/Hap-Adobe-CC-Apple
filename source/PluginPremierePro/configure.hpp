@@ -1,6 +1,7 @@
 #pragma once
 
 #define SETTING_STRING					"Turn on marker export and warnings? (Don't turn this on for rendering preview files)"
+#define ID_ALPHA_CHANNEL                "ParAlphaChannnel"
 #define TOP_VIDEO_PARAM_GROUP_NAME		L"Video parameters"
 #define VIDEO_CODEC_PARAM_GROUP_NAME	L"Video"
 #define BASIC_VIDEO_PARAM_GROUP_NAME	L"Basic video"

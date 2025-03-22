@@ -31,9 +31,9 @@ const CodecDetails& CodecRegistry::details()
         .subtypes = hapCodecSubtypes,
         .defaultSubType = kHapCodecSubType,
         .isHighBitDepth = false,
-        .hasExplicitIncludeAlphaChannel = false,
         .hasChunkCount = true,
         .alpha = AlphaCodecDetails{
+            .hasExplicitAlphaChannel = false,
             .hasPerSubtypeAlphaSupport = true,
             .subtypeAlphaSupport{
                 // alpha channel for codec SubTypes
@@ -64,7 +64,6 @@ const CodecDetails& CodecRegistry::details()
         },
         .premiereParamsVersion = 6,
         .premiereGroupName = "HAPSpecificCodecGroup",
-        .premiereIncludeAlphaChannelName = std::string(),
         .premiereChunkCountName = "HAPChunkCount",
         .premiereSig = 'HAPP', // for afterEffects, must differ from afterEffectsSig
         .afterEffectsSig = 'HAPA',

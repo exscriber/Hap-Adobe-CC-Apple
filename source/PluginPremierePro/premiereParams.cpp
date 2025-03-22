@@ -78,11 +78,11 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         heightValues.hidden = false;
         heightParam.paramValues = heightValues;
         exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &heightParam);
-        if (codec.details().hasExplicitIncludeAlphaChannel)
+        if (codec.details().alpha.hasExplicitAlphaChannel)
         {
             exNewParamInfo includeAlphaParam;
             exParamValues includeAlphaValues;
-			SDKStringConvert::to_buffer(codec.details().premiereIncludeAlphaChannelName, includeAlphaParam.identifier);
+			SDKStringConvert::to_buffer(ID_ALPHA_CHANNEL, includeAlphaParam.identifier);
             includeAlphaParam.paramType = exParamType_bool;
             includeAlphaParam.flags = exParamFlag_none;
             includeAlphaValues.rangeMin.intValue = 0;
@@ -407,9 +407,9 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
         }
     }
     
-    if (codec.details().hasExplicitIncludeAlphaChannel)
+    if (codec.details().alpha.hasExplicitAlphaChannel)
     {
-        settings->exportParamSuite->SetParamName(exID, 0, codec.details().premiereIncludeAlphaChannelName.c_str(), StringForPr(STR_INCLUDE_ALPHA));
+        settings->exportParamSuite->SetParamName(exID, 0, ID_ALPHA_CHANNEL, StringForPr(STR_INCLUDE_ALPHA));
     }
 
     settings->exportParamSuite->SetParamName(exID, 0, codec.details().premiereGroupName.c_str(), StringForPr(CODEC_SPECIFIC_PARAM_GROUP_NAME));
@@ -463,10 +463,10 @@ prMALError getParamSummary(exportStdParms *stdParmsP, exParamSummaryRec *summary
 
     paramSuite->GetParamValue(exporterPluginID, mgroupIndex, ADBEVideoWidth, &width);
     paramSuite->GetParamValue(exporterPluginID, mgroupIndex, ADBEVideoHeight, &height);
-    bool hasExplicitUseAlphaChannel = codec.details().hasExplicitIncludeAlphaChannel;
+    bool hasExplicitUseAlphaChannel = codec.details().alpha.hasExplicitAlphaChannel;
     if (hasExplicitUseAlphaChannel)
     {
-        paramSuite->GetParamValue(exporterPluginID, mgroupIndex, codec.details().premiereIncludeAlphaChannelName.c_str(), &includeAlphaChannel);
+        paramSuite->GetParamValue(exporterPluginID, mgroupIndex, ID_ALPHA_CHANNEL, &includeAlphaChannel);
     }
     paramSuite->GetParamValue(exporterPluginID, mgroupIndex, ADBEVideoFPS, &frameRate);
     paramSuite->GetParamValue(exporterPluginID, mgroupIndex, ADBEAudioRatePerSecond, &sampleRate);

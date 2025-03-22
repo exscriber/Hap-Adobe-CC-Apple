@@ -339,10 +339,10 @@ static EncoderSettings getVideoEncoderSettings(PrSDKExportParamSuite* paramSuite
     if (codecAlphaDetails.hasPerSubtypeAlphaSupport) {
         alpha = codecAlphaDetails.subtypeAlphaSupport[videoFormat];
     } else {
-        bool hasExplicitAlphaChannel{ codec.details().hasExplicitIncludeAlphaChannel };
+        bool hasExplicitAlphaChannel{ codec.details().alpha.hasExplicitAlphaChannel };
         if (hasExplicitAlphaChannel) {
             exParamValues includeAlphaChannel;
-            paramSuite->GetParamValue(exID, 0, codec.details().premiereIncludeAlphaChannelName.c_str(), &includeAlphaChannel);
+            paramSuite->GetParamValue(exID, 0, ID_ALPHA_CHANNEL, &includeAlphaChannel);
             alpha = includeAlphaChannel.value.intValue ? true : false;
         }
     };

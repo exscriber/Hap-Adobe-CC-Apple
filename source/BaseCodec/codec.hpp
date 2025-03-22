@@ -269,6 +269,7 @@ typedef std::pair<Codec4CC, std::string> CodecNamedSubType;
 typedef std::vector<CodecNamedSubType> CodecNamedSubTypes;
 
 struct AlphaCodecDetails {
+    bool hasExplicitAlphaChannel;
     bool hasPerSubtypeAlphaSupport;
     std::map<Codec4CC, CodecAlpha> subtypeAlphaSupport;
 };
@@ -292,13 +293,11 @@ struct CodecDetails
     CodecNamedSubTypes subtypes;     // leave empty for no subtypes
     Codec4CC defaultSubType;
     bool isHighBitDepth;             // should host expect high bit depth from this codec
-    bool hasExplicitIncludeAlphaChannel;
     bool hasChunkCount;
     AlphaCodecDetails alpha;
     QualityCodecDetails quality;
     uint32_t premiereParamsVersion;              // Adobe Premiere parameters version
     std::string premiereGroupName;               // Adobe Premiere group name for storage
-    std::string premiereIncludeAlphaChannelName; // Adobe Premiere include alpha channel for storage(backwards compat)
     std::string premiereChunkCountName;          // Adobe Premiere chunk count name for storage (backwards compat)
     uint32_t premiereSig;           // Premiere importer registration info - for benefit of AfterEffects - must be different to afterEffectsSig
     uint32_t afterEffectsSig;       // AfterEffects output module registration info - docs suggest letting Adobe know what you use here
