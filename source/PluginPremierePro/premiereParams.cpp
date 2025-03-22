@@ -173,12 +173,12 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         if (codec.details().hasChunkCount) {
             exNewParamInfo chunkCountParam;
             exParamValues chunkCountValues;
-			SDKStringConvert::to_buffer(codec.details().premiereChunkCountName, chunkCountParam.identifier);
+            SDKStringConvert::to_buffer(ID_CHUNK_COUNT, chunkCountParam.identifier);
             chunkCountParam.paramType = exParamType_int;
-            chunkCountParam.flags = exParamFlag_optional;
+            chunkCountParam.flags = exParamFlag_optional | exParamFlag_slider | exParamFlag_nonlinear;
             chunkCountValues.rangeMin.intValue = k_chunkingMin;
             chunkCountValues.rangeMax.intValue = k_chunkingMax;
-            chunkCountValues.value.intValue = 1;
+            chunkCountValues.value.intValue = 4;
             chunkCountValues.disabled = false;
             chunkCountValues.hidden = false;
             chunkCountParam.paramValues = chunkCountValues;
@@ -415,14 +415,14 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
     settings->exportParamSuite->SetParamName(exID, 0, codec.details().premiereGroupName.c_str(), StringForPr(CODEC_SPECIFIC_PARAM_GROUP_NAME));
 
     if (codec.details().hasChunkCount) {
-        settings->exportParamSuite->SetParamName(exID, 0, codec.details().premiereChunkCountName.c_str(), StringForPr(STR_CHUNKING));
+        settings->exportParamSuite->SetParamName(exID, 0, ID_CHUNK_COUNT, StringForPr(STR_CHUNKS));
         exParamValues chunkCountValues;
-        settings->exportParamSuite->GetParamValue(exID, 0, codec.details().premiereChunkCountName.c_str(), &chunkCountValues);
+        settings->exportParamSuite->GetParamValue(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
         chunkCountValues.rangeMin.intValue = k_chunkingMin;
         chunkCountValues.rangeMax.intValue = k_chunkingMax;
         chunkCountValues.disabled = false;
         chunkCountValues.hidden = false;
-        settings->exportParamSuite->ChangeParam(exID, 0, codec.details().premiereChunkCountName.c_str(), &chunkCountValues);
+        settings->exportParamSuite->ChangeParam(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
     }
 
     settings->exportParamSuite->SetParamName(exID, 0, ADBEBasicAudioGroup, StringForPr(BASIC_AUDIO_PARAM_GROUP_NAME));
@@ -554,14 +554,14 @@ prMALError validateParamChanged(exportStdParms *stdParmsP, exParamChangedRec *va
     }
 
     if (codec.details().hasChunkCount) {
-        settings->exportParamSuite->SetParamName(exID, 0, codec.details().premiereChunkCountName.c_str(), StringForPr(STR_CHUNKING));
+        settings->exportParamSuite->SetParamName(exID, 0, ID_CHUNK_COUNT, StringForPr(STR_CHUNKS));
         exParamValues chunkCountValues;
-        settings->exportParamSuite->GetParamValue(exID, 0, codec.details().premiereChunkCountName.c_str(), &chunkCountValues);
+        settings->exportParamSuite->GetParamValue(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
         chunkCountValues.rangeMin.intValue = k_chunkingMin;
         chunkCountValues.rangeMax.intValue = k_chunkingMax;
         chunkCountValues.disabled = false;
         chunkCountValues.hidden = false;
-        settings->exportParamSuite->ChangeParam(exID, 0, codec.details().premiereChunkCountName.c_str(), &chunkCountValues);
+        settings->exportParamSuite->ChangeParam(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
     }
 
     return malNoError;

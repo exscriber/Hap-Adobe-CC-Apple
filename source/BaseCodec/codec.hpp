@@ -298,7 +298,6 @@ struct CodecDetails
     QualityCodecDetails quality;
     uint32_t premiereParamsVersion;              // Adobe Premiere parameters version
     std::string premiereGroupName;               // Adobe Premiere group name for storage
-    std::string premiereChunkCountName;          // Adobe Premiere chunk count name for storage (backwards compat)
     uint32_t premiereSig;           // Premiere importer registration info - for benefit of AfterEffects - must be different to afterEffectsSig
     uint32_t afterEffectsSig;       // AfterEffects output module registration info - docs suggest letting Adobe know what you use here
     uint32_t afterEffectsCreator;   // other AEX reg info - _not_ exactly sure how this is is used by AEX

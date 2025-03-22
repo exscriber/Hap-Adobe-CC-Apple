@@ -2,6 +2,8 @@
 
 #define SETTING_STRING					"Turn on marker export and warnings? (Don't turn this on for rendering preview files)"
 #define ID_ALPHA_CHANNEL                "ParAlphaChannnel"
+#define ID_CHUNK_COUNT                  "ParChunkCount"
+
 #define TOP_VIDEO_PARAM_GROUP_NAME		L"Video parameters"
 #define VIDEO_CODEC_PARAM_GROUP_NAME	L"Video"
 #define BASIC_VIDEO_PARAM_GROUP_NAME	L"Basic video"
@@ -11,7 +13,7 @@
 #define STR_CODEC_TOOLTIP				L"The video codec to be used for encode."
 #define STR_WIDTH						L"Width"
 #define STR_HEIGHT						L"Height"
-#define STR_CHUNKING                    L"Chunk count"
+#define STR_CHUNKS                      L"Chunks"
 #define STR_QUALITY						L"Quality"
 #define STR_FRAME_RATE					L"Frame Rate (fps)"
 #define STR_FRAME_RATE_10				L"10"

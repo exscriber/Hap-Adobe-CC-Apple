@@ -601,7 +601,7 @@ static void renderAndWriteAllVideo(exDoExportRec* exportInfoP, prMALError& error
 
     int chunkCount{ 0 };
     if (codec.details().hasChunkCount) {
-        settings->exportParamSuite->GetParamValue(exID, 0, codec.details().premiereChunkCountName.c_str(), &chunkCountParam);
+        settings->exportParamSuite->GetParamValue(exID, 0, ID_CHUNK_COUNT, &chunkCountParam);
         // currently 0 means auto, which until we have more information about the playback device will be 1 chunk
         chunkCount = (chunkCountParam.optionalParamEnabled == 1) ?
             std::max(1, chunkCountParam.value.intValue)  // force old param to 1

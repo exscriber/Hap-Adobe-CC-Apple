@@ -64,7 +64,6 @@ const CodecDetails& CodecRegistry::details()
         },
         .premiereParamsVersion = 6,
         .premiereGroupName = "HAPSpecificCodecGroup",
-        .premiereChunkCountName = "HAPChunkCount",
         .premiereSig = 'HAPP', // for afterEffects, must differ from afterEffectsSig
         .afterEffectsSig = 'HAPA',
         .afterEffectsCreator = 'DTEK',
