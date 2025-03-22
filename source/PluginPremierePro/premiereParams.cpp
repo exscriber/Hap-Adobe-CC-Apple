@@ -403,6 +403,7 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
             bool enableQuality = codec.details().hasQualityForSubType(codecSubType);
             settings->exportParamSuite->GetParamValue(exID, 0, ADBEVideoQuality, &qualityToValidate);
             qualityToValidate.disabled = !enableQuality;
+            qualityToValidate.hidden = !enableQuality;
             settings->exportParamSuite->ChangeParam(exID, 0, ADBEVideoQuality, &qualityToValidate);
         }
     }
@@ -549,6 +550,7 @@ prMALError validateParamChanged(exportStdParms *stdParmsP, exParamChangedRec *va
             bool enableQuality = codec.details().hasQualityForSubType(codecSubType);
             settings->exportParamSuite->GetParamValue(exID, 0, ADBEVideoQuality, &qualityToValidate);
             qualityToValidate.disabled = !enableQuality;
+            qualityToValidate.hidden = !enableQuality;
             settings->exportParamSuite->ChangeParam(exID, 0, ADBEVideoQuality, &qualityToValidate);
         }
     }
