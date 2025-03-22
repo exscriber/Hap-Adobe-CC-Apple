@@ -22,20 +22,20 @@ const CodecDetails& CodecRegistry::details()
     };
 
     static CodecDetails details{
-        "HAP",                           // productName
-        "HAP Classic",                   // fileFormatName;
-        "HAP",                           // fileFormatShortName;
-        "mov",                           // videoFileExt
-        FileFormat{'p', 'a', 'h', '\0'}, // fileFormat
-        VideoFormat{'Y', 'P', 'A', 'H'}, // videoFormat
-        hapCodecSubtypes,                // codecSubTypes
-        kHapCodecSubType,                // defaultSubType
-        false,                           // isHighBitDepth
-        false,                           // hasExplicitIncludeAlphaChannel
-        true,                            // hasChunkCount
-        AlphaCodecDetails{
-            true, // hasPerSubtypeAlphaSupport
-            {
+        .productName = "HAP",
+        .fileFormatName = "HAP Classic",
+        .fileFormatShortName = "HAP",
+        .videoFileExt = "mov",
+        .fileFormat = FileFormat{'p', 'a', 'h', '\0'},
+        .videoFormat = VideoFormat{'Y', 'P', 'A', 'H'},
+        .subtypes = hapCodecSubtypes,
+        .defaultSubType = kHapCodecSubType,
+        .isHighBitDepth = false,
+        .hasExplicitIncludeAlphaChannel = false,
+        .hasChunkCount = true,
+        .alpha = AlphaCodecDetails{
+            .hasPerSubtypeAlphaSupport = true,
+            .subtypeAlphaSupport{
                 // alpha channel for codec SubTypes
                 {kHapCodecSubType, false},
                 {kHapAlphaCodecSubType, true},
@@ -44,9 +44,9 @@ const CodecDetails& CodecRegistry::details()
                 // {kHapAOnlyCodecSubType, true},
             },
         },
-        QualityCodecDetails{
-            true, // hasQualityForAnySubType
-            {
+        .quality = QualityCodecDetails{
+            .hasQualityForAnySubType = true,
+            .presentForSubType{
                 // quality settings for codec SubTypes
                 {kHapCodecSubType, true},
                 {kHapAlphaCodecSubType, true},
@@ -54,23 +54,23 @@ const CodecDetails& CodecRegistry::details()
                 {kHapYCoCgACodecSubType, false},
                 // {kHapAOnlyCodecSubType, false},
             },
-            {
+            .descriptions = {
                 // quality settings
                 {int(EncoderQuality::Fast), "Fast"},
                 {int(EncoderQuality::Normal), "Normal"},
             },
             // default quality setting
-            int(EncoderQuality::Normal),
+            .defaultQuality = int(EncoderQuality::Normal),
         },
-        6,                       // premiereParamsVersion
-        "HAPSpecificCodecGroup", // premiereGroupName
-        std::string(),           // premiereIncludeAlphaChannelNmae
-        "HAPChunkCount",         // premiereChunkCountName
-        'HAPP',                  // premiereSig [for afterEffects, must differ from afterEffectsSig]
-        'HAPA',                  // afterEffectsSig
-        'DTEK',                  // afterEffectsCreator
-        'HAP_',                  // afterEffectsType
-        'HAP_'                   // afterEffectsMacType
+        .premiereParamsVersion = 6,
+        .premiereGroupName = "HAPSpecificCodecGroup",
+        .premiereIncludeAlphaChannelName = std::string(),
+        .premiereChunkCountName = "HAPChunkCount",
+        .premiereSig = 'HAPP', // for afterEffects, must differ from afterEffectsSig
+        .afterEffectsSig = 'HAPA',
+        .afterEffectsCreator = 'DTEK',
+        .afterEffectsType = 'HAP_',
+        .afterEffectsMacType = 'HAP_',
     };
 
     return details;
