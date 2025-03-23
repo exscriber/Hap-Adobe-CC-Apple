@@ -18,8 +18,6 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
     csSDK_int32	exporterPluginID = generateDefaultParamRec->exporterPluginID;
     csSDK_int32	mgroupIndex = 0;
     PrParam hasVideo, hasAudio, seqWidth, seqHeight, seqFrameRate, seqChannelType, seqSampleRate;
-    PrParam pixelAspectRatioNumerator, pixelAspectRatioDenominator;
-    PrParam fieldTypeP;
 
     const auto& codec = *CodecRegistry::codec();
 
@@ -29,10 +27,6 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_SourceHasAudio, &hasAudio);
         exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_VideoWidth, &seqWidth);
         exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_VideoHeight, &seqHeight);
-
-        exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_PixelAspectNumerator, &pixelAspectRatioNumerator);
-        exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_PixelAspectDenominator, &pixelAspectRatioDenominator);
-        exportInfoSuite->GetExportSourceInfo(exporterPluginID, kExportInfo_VideoFieldType, &fieldTypeP);
 
         if (seqWidth.mInt32 == 0)
             seqWidth.mInt32 = 1920;
@@ -125,51 +119,37 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         frameRateParam.paramValues = frameRateValues;
         exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &frameRateParam);
 
+#if 1 // Match Source - Params
         // !!! WORKAROUND - needed in CC 2020 at least
         // !!! These parameters aren't used by any foundation-based codecs, but if they're not present the match-source button
         // !!! causes presets to become unusable
         
         // pixel aspect ratio
         exParamValues parValues;
-        parValues.structVersion = 1;
-        parValues.rangeMin.ratioValue.numerator = 10;
-        parValues.rangeMin.ratioValue.denominator = 11;
-        parValues.rangeMax.ratioValue.numerator = 2;
-        parValues.rangeMax.ratioValue.denominator = 1;
-        parValues.value.ratioValue.numerator = pixelAspectRatioNumerator.mInt32;
-        parValues.value.ratioValue.denominator = pixelAspectRatioDenominator.mInt32;
+        parValues.value.ratioValue = {1, 1};
         parValues.disabled = false;
         parValues.hidden = true;   // !!! because this is only present to avoid preset corruption
-
         exNewParamInfo parParam;
-        parParam.structVersion = 1;
         strncpy(parParam.identifier, ADBEVideoAspect, 255);
         parParam.paramType = exParamType_ratio;
         parParam.flags = exParamFlag_none;
         parParam.paramValues = parValues;
-
         settings->exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &parParam);
 
         // field order
-        if (fieldTypeP.mInt32 == prFieldsUnknown)
-            fieldTypeP.mInt32 = prFieldsNone;
-
         exParamValues fieldOrderValues;
-        fieldOrderValues.structVersion = 1;
-        fieldOrderValues.value.intValue = fieldTypeP.mInt32;
+        fieldOrderValues.value.intValue = prFieldsNone;
         fieldOrderValues.disabled = false;
         fieldOrderValues.hidden = true;  // !!! because this only present to avoid preset corruption
-
         exNewParamInfo fieldOrderParam;
-        fieldOrderParam.structVersion = 1;
         strncpy(fieldOrderParam.identifier, ADBEVideoFieldType, 255);
         fieldOrderParam.paramType = exParamType_int;
         fieldOrderParam.flags = exParamFlag_none;
         fieldOrderParam.paramValues = fieldOrderValues;
-
         exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicVideoGroup, &fieldOrderParam);
 
-        // !!! end workaround
+#endif // !!! end workaround
+
         if (codec.details().hasChunkCount) {
             exNewParamInfo chunkCountParam;
             exParamValues chunkCountValues;
@@ -279,6 +259,7 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
 
     settings->exportParamSuite->SetParamName(exID, 0, ADBEVideoHeight, StringForPr(STR_HEIGHT));
 
+#if 0 // Probably not necessary
     // width
     exParamValues widthValues;
     settings->exportParamSuite->GetParamValue(exID, 0, ADBEVideoWidth, &widthValues);
@@ -297,8 +278,19 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
     heightValues.rangeMax.intValue = 16384;
 
     settings->exportParamSuite->ChangeParam(exID, 0, ADBEVideoHeight, &heightValues);
+#endif
 
+#if 1 // Match Source: minimal postProcess
+    exOneParamValueRec aspectVal = {.ratioValue = {1, 1}};
+    settings->exportParamSuite->SetParamName(exID, 0, ADBEVideoAspect, StringForPr("Aspect"));
+    settings->exportParamSuite->ClearConstrainedValues(exID, 0, ADBEVideoAspect);
+    settings->exportParamSuite->AddConstrainedValuePair(exID, 0, ADBEVideoAspect, &aspectVal, StringForPr("Square pixels (1.0)"));
 
+    exOneParamValueRec fieldVal = {.intValue = prFieldsNone};
+    settings->exportParamSuite->SetParamName(exID, 0, ADBEVideoFieldType, StringForPr("Field Order"));
+    settings->exportParamSuite->ClearConstrainedValues(exID, 0, ADBEVideoFieldType);
+    settings->exportParamSuite->AddConstrainedValuePair(exID, 0, ADBEVideoFieldType, &fieldVal, StringForPr("Progressive"));
+#else
     // !!! WORKAROUND - needed in CC 2020 at least
     // !!! These parameters aren't used by any foundation-based codecs, but if they're not present the match-source button
     // !!! causes presets to become unusable
@@ -349,6 +341,7 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
         settings->exportParamSuite->AddConstrainedValuePair(exID, 0, ADBEVideoFieldType, &tempFieldOrder, StringForPr(fieldOrderStrings[i]));
     }
     // !!! END WORKAROUND
+#endif
 
     if (codec.details().subtypes.size())
     {
