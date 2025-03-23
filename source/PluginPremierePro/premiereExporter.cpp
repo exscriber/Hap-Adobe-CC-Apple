@@ -363,17 +363,16 @@ static EncoderSettings getVideoEncoderSettings(PrSDKExportParamSuite* paramSuite
 prMALError queryOutputSettings(exportStdParms *stdParmsP, exQueryOutputSettingsRec *outputSettingsP)
 {
 	const csSDK_uint32 exID = outputSettingsP->exporterPluginID;
-    exParamValues width, height, frameRate;
+    const csSDK_int32 mgroupIndex = outputSettingsP->inMultiGroupIndex;
+
     ExportSettings* privateData = reinterpret_cast<ExportSettings*>(outputSettingsP->privateData);
 	PrSDKExportParamSuite* paramSuite = privateData->exportParamSuite;
-	const csSDK_int32 mgroupIndex = 0;
-	float fps = 0.0f;
 
     const auto& codec = *CodecRegistry::codec();
 
-
 	if (outputSettingsP->inExportVideo)
 	{
+        exParamValues width, height, frameRate;
 		paramSuite->GetParamValue(exID, mgroupIndex, ADBEVideoWidth, &width);
 		outputSettingsP->outVideoWidth = width.value.intValue;
 		paramSuite->GetParamValue(exID, mgroupIndex, ADBEVideoHeight, &height);
@@ -391,7 +390,7 @@ prMALError queryOutputSettings(exportStdParms *stdParmsP, exQueryOutputSettingsR
 	    csSDK_uint32 videoBitrate = 0;
 
 		privateData->timeSuite->GetTicksPerSecond(&ticksPerSecond);
-		fps = static_cast<float>(ticksPerSecond) / frameRate.value.timeValue;
+		float fps = static_cast<float>(ticksPerSecond) / frameRate.value.timeValue;
 
         auto [alpha, videoFormat, quality] = getVideoEncoderSettings(paramSuite, exID);
 
