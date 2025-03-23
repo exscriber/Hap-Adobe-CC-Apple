@@ -4,9 +4,18 @@
 #include "premiereParams.hpp"
 #include "prstring.hpp"
 #include "string_conversion.hpp"
+#include "util.hpp"
 
 const int k_chunkingMin = 1;
 const int k_chunkingMax = 64;
+const int k_chunkingAutoMax = 16;
+const int k_chunkingUnitSize = 1920 * 1080;
+
+csSDK_int32 calculateChunksAuto(const csSDK_int32 width, const csSDK_int32 height) {
+    float frameSize = roundUpToMultipleOf4(width) * roundUpToMultipleOf4(height);
+    int chunks = std::min(k_chunkingAutoMax, int(ceil(frameSize / k_chunkingUnitSize)));
+    return chunks;
+}
 
 prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultParamRec *generateDefaultParamRec)
 {
@@ -178,7 +187,7 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
             chunkCountParam.flags = exParamFlag_optional | exParamFlag_slider | exParamFlag_nonlinear;
             chunkCountValues.rangeMin.intValue = k_chunkingMin;
             chunkCountValues.rangeMax.intValue = k_chunkingMax;
-            chunkCountValues.value.intValue = 4;
+            chunkCountValues.value.intValue = calculateChunksAuto(seqWidth.mInt32, seqHeight.mInt32);
             chunkCountValues.disabled = false;
             chunkCountValues.hidden = false;
             chunkCountParam.paramValues = chunkCountValues;
@@ -550,6 +559,16 @@ prMALError validateParamChanged(exportStdParms *stdParmsP, exParamChangedRec *va
         chunkCountValues.disabled = false;
         chunkCountValues.hidden = false;
         settings->exportParamSuite->ChangeParam(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
+
+        // Handle chunk setting changes and recalculate auto value
+        if (!chunkCountValues.optionalParamEnabled) {
+            exParamValues width, height, chunkCountValue;
+            settings->exportParamSuite->GetParamValue(exID, 0, ADBEVideoWidth, &width);
+            settings->exportParamSuite->GetParamValue(exID, 0, ADBEVideoHeight, &height);
+            settings->exportParamSuite->GetParamValue(exID, 0, ID_CHUNK_COUNT, &chunkCountValue);
+            chunkCountValue.value.intValue = calculateChunksAuto(width.value.intValue, height.value.intValue);
+            settings->exportParamSuite->ChangeParam(exID, 0, ID_CHUNK_COUNT, &chunkCountValue);
+        }
     }
 
     return malNoError;
