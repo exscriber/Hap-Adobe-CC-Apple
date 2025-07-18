@@ -3,14 +3,8 @@ cmake_minimum_required(VERSION 3.31)
 # this is the one we will install
 add_library(PluginPremierePro MODULE)
 
-add_definitions(-DFILE_IMPORT_FOUR_CC=${FILE_IMPORT_FOUR_CC})
-
 target_sources(PluginPremierePro
     PRIVATE
-        premiereImporter.cpp
-        premiereImporter.hpp
-        async_importer.cpp
-        async_importer.hpp
         configure.hpp
         export_settings.hpp
         premiereExporter.cpp
@@ -19,7 +13,6 @@ target_sources(PluginPremierePro
         premiereParams.hpp
         prstring.cpp
         prstring.hpp
-        $<$<PLATFORM_ID:Windows>:file_import.rc>
 )
 
 find_library(Foundation Foundation)
