@@ -8,14 +8,17 @@
 
 #include "PrSDKExportParamSuite.h"
 
-const int k_chunkingMin = 1;
-const int k_chunkingMax = 64;
-const int k_chunkingAutoMax = 16;
-const int k_chunkingUnitSize = 1920 * 1080;
+
+struct Chunking {
+    static constexpr int Min = 1;
+    static constexpr int Max = 64;
+    static constexpr int AutoMax = 16;
+    static constexpr int UnitSize = 1920 * 1080;
+};
 
 csSDK_int32 calculateChunksAuto(const csSDK_int32 width, const csSDK_int32 height) {
     float frameSize = roundUpToMultipleOf4(width) * roundUpToMultipleOf4(height);
-    int chunks = std::min(k_chunkingAutoMax, int(ceil(frameSize / k_chunkingUnitSize)));
+    int chunks = std::min(Chunking::AutoMax, int(ceil(frameSize / Chunking::UnitSize)));
     return chunks;
 }
 
@@ -187,8 +190,8 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
             SDKStringConvert::to_buffer(ID_CHUNK_COUNT, chunkCountParam.identifier);
             chunkCountParam.paramType = exParamType_int;
             chunkCountParam.flags = exParamFlag_optional | exParamFlag_slider | exParamFlag_nonlinear;
-            chunkCountValues.rangeMin.intValue = k_chunkingMin;
-            chunkCountValues.rangeMax.intValue = k_chunkingMax;
+            chunkCountValues.rangeMin.intValue = Chunking::Min;
+            chunkCountValues.rangeMax.intValue = Chunking::Max;
             chunkCountValues.value.intValue = calculateChunksAuto(seqWidth.mInt32, seqHeight.mInt32);
             chunkCountValues.disabled = false;
             chunkCountValues.hidden = false;
@@ -432,8 +435,8 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
         settings->exportParamSuite->SetParamName(exID, 0, ID_CHUNK_COUNT, StringForPr(STR_CHUNKS));
         exParamValues chunkCountValues;
         settings->exportParamSuite->GetParamValue(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
-        chunkCountValues.rangeMin.intValue = k_chunkingMin;
-        chunkCountValues.rangeMax.intValue = k_chunkingMax;
+        chunkCountValues.rangeMin.intValue = Chunking::Min;
+        chunkCountValues.rangeMax.intValue = Chunking::Max;
         chunkCountValues.disabled = false;
         chunkCountValues.hidden = false;
         settings->exportParamSuite->ChangeParam(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
@@ -577,8 +580,8 @@ prMALError validateParamChanged(exportStdParms *stdParmsP, exParamChangedRec *va
         // settings->exportParamSuite->SetParamName(exID, 0, ID_CHUNK_COUNT, StringForPr(STR_CHUNKS));
         exParamValues chunkCountValues;
         settings->exportParamSuite->GetParamValue(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
-        chunkCountValues.rangeMin.intValue = k_chunkingMin;
-        chunkCountValues.rangeMax.intValue = k_chunkingMax;
+        chunkCountValues.rangeMin.intValue = Chunking::Min;
+        chunkCountValues.rangeMax.intValue = Chunking::Max;
         chunkCountValues.disabled = false;
         chunkCountValues.hidden = false;
         settings->exportParamSuite->ChangeParam(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
