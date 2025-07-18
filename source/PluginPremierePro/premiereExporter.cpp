@@ -7,8 +7,6 @@
 #include "exporter.hpp"
 #include "configure.hpp"
 #include "string_conversion.hpp"
-#include <vector>
-#include <locale>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -274,7 +272,7 @@ prMALError endInstance(exportStdParms* stdParmsP, exExporterInstanceRec* instanc
 		result = spBasic->ReleaseSuite(kPrSDKExportInfoSuite, kPrSDKExportInfoSuiteVersion);
 
 	if (settings->errorSuite)
-		result = spBasic->ReleaseSuite(kPrSDKErrorSuite, kPrSDKErrorSuiteVersion3);
+		result = spBasic->ReleaseSuite(kPrSDKErrorSuite, kPrSDKErrorSuiteVersion);
 
 	if (settings->clipRenderSuite)
 		result = spBasic->ReleaseSuite(kPrSDKClipRenderSuite, kPrSDKClipRenderSuiteVersion);
@@ -295,7 +293,7 @@ prMALError endInstance(exportStdParms* stdParmsP, exExporterInstanceRec* instanc
         result = spBasic->ReleaseSuite(kPrSDKAudioSuite, kPrSDKAudioSuiteVersion);
 
     if (settings->sequenceAudioSuite)
-        result = spBasic->ReleaseSuite(kPrSDKSequenceAudioSuite, kPrSDKSequenceAudioSuiteVersion1);
+        result = spBasic->ReleaseSuite(kPrSDKSequenceAudioSuite, kPrSDKSequenceAudioSuiteVersion);
 
 	settings->~ExportSettings();
 
@@ -406,7 +404,7 @@ prMALError queryOutputSettings(exportStdParms *stdParmsP, exQueryOutputSettingsR
         paramSuite->GetParamValue(exID, mgroupIndex, ADBEAudioNumChannels, &channelType);
         
         outputSettingsP->outAudioChannelType = static_cast<PrAudioChannelType>(channelType.value.intValue);
-        outputSettingsP->outAudioSampleRate = sampleRate.value.floatValue;
+        outputSettingsP->outAudioSampleRate = sampleRate.value.intValue;
         outputSettingsP->outAudioSampleType = kPrAudioSampleType_16BitInt;
     }
 
@@ -633,7 +631,7 @@ static void renderAndWriteAllVideo(exDoExportRec* exportInfoP, prMALError& error
 
         audio = AudioDef{
             GetNumberOfAudioChannels(channelType.value.intValue),
-            (int)sampleRate.value.floatValue,
+            (int)sampleRate.value.intValue,
             2,
             AudioEncoding_Signed_PCM
         };
@@ -742,16 +740,20 @@ static void renderAndWriteAllAudio(exDoExportRec *exportInfoP, prMALError &error
     settings->exportParamSuite->GetParamValue(exID, 0, ADBEAudioNumChannels, &channelType);
     csSDK_int32 numAudioChannels = GetNumberOfAudioChannels(channelType.value.intValue);
 
+    // We rely on ffmpeg to name the audio channels correctly...
+    PrAudioChannelLabel audioChannelLabels[kMaxAudioChannelCount] = {kPrAudioChannelLabel_Discrete};
+
     csSDK_uint32 audioRenderID = 0;
     settings->sequenceAudioSuite->MakeAudioRenderer(exID,
                                                     exportInfoP->startTime,
-                                                    (PrAudioChannelType)channelType.value.intValue,
+                                                    numAudioChannels,
+                                                    audioChannelLabels,
                                                     kPrAudioSampleType_32BitFloat,
-                                                    (float)sampleRate.value.floatValue,
+                                                    (float)sampleRate.value.intValue,
                                                     &audioRenderID);
 
     PrTime ticksPerSample = 0;
-    settings->timeSuite->GetTicksPerAudioSample((float)sampleRate.value.floatValue, &ticksPerSample);
+    settings->timeSuite->GetTicksPerAudioSample((float)sampleRate.value.intValue, &ticksPerSample);
 
     PrTime exportDuration = exportInfoP->endTime - exportInfoP->startTime;
     csSDK_int64 totalAudioSamples = exportDuration / ticksPerSample;

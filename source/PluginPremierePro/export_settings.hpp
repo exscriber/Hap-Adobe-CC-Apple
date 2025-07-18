@@ -31,7 +31,7 @@ typedef struct ExportSettings
 	PrSDKExportProgressSuite* exportProgressSuite;
 	PrSDKExportInfoSuite* exportInfoSuite;
 	PrSDKExportFileSuite* exportFileSuite;
-	PrSDKErrorSuite3* errorSuite;
+	PrSDKErrorSuite* errorSuite;
 	PrSDKClipRenderSuite* clipRenderSuite;
 	PrSDKMarkerSuite* markerSuite;
 	PrSDKPPixSuite* ppixSuite;
@@ -39,5 +39,5 @@ typedef struct ExportSettings
     PrSDKMemoryManagerSuite* memorySuite;
 	PrSDKWindowSuite* windowSuite;
 	PrSDKAudioSuite* audioSuite;
-	PrSDKSequenceAudioSuite1* sequenceAudioSuite;
+	PrSDKSequenceAudioSuite* sequenceAudioSuite;
 } ExportSettings;

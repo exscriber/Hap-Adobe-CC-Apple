@@ -6,6 +6,8 @@
 #include "string_conversion.hpp"
 #include "util.hpp"
 
+#include "PrSDKExportParamSuite.h"
+
 const int k_chunkingMin = 1;
 const int k_chunkingMax = 64;
 const int k_chunkingAutoMax = 16;
@@ -196,15 +198,31 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
 
         // Audio parameters
         exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBETopParamGroup, ADBEAudioTabGroup, StringForPr(TOP_AUDIO_PARAM_GROUP_NAME), false, false, false);
+        exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEAudioTabGroup, ADBEAudioCodecGroup, StringForPr(AUDIO_CODEC_PARAM_GROUP_NAME), false, false, false);
         exportParamSuite->AddParamGroup(exporterPluginID, mgroupIndex, ADBEAudioTabGroup, ADBEBasicAudioGroup, StringForPr(BASIC_AUDIO_PARAM_GROUP_NAME), false, false, false);
+
+        // Audio codec
+        exNewParamInfo audioCodecParam;
+        exParamValues audioCodecValues;
+        SDKStringConvert::to_buffer(ADBEAudioCodec, audioCodecParam.identifier);
+        audioCodecParam.paramType = exParamType_int;
+        audioCodecParam.flags = exParamFlag_none;
+        audioCodecValues.rangeMin.intValue = 0;
+        audioCodecValues.value.intValue = 0; // only one codec: Uncompressed
+        audioCodecValues.disabled = false;
+        audioCodecValues.hidden = false;
+        audioCodecParam.paramValues = audioCodecValues;
+        exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEAudioCodecGroup, &audioCodecParam);
 
         // Sample rate
         exNewParamInfo sampleRateParam;
         exParamValues sampleRateValues;
 		SDKStringConvert::to_buffer(ADBEAudioRatePerSecond, sampleRateParam.identifier);
-        sampleRateParam.paramType = exParamType_float;
+        sampleRateParam.paramType = exParamType_int;
         sampleRateParam.flags = exParamFlag_none;
-        sampleRateValues.value.floatValue = 44100.0f; // disguise servers default samplerate
+        sampleRateValues.rangeMin.intValue = 8000;
+        sampleRateValues.rangeMax.intValue = 96000;
+        sampleRateValues.value.intValue = 44100; // disguise servers default samplerate
         sampleRateValues.disabled = false;
         sampleRateValues.hidden = false;
         sampleRateParam.paramValues = sampleRateValues;
@@ -217,7 +235,7 @@ prMALError generateDefaultParams(exportStdParms *stdParms, exGenerateDefaultPara
         channelTypeParam.paramType = exParamType_int;
         channelTypeParam.flags = exParamFlag_none;
         channelTypeValues.value.intValue = kPrAudioChannelType_Stereo;
-        channelTypeValues.disabled = false; // TODO in Release disable to simplify user expirience: only stereo
+        channelTypeValues.disabled = false;
         channelTypeValues.hidden = false;
         channelTypeParam.paramValues = channelTypeValues;
         exportParamSuite->AddParam(exporterPluginID, mgroupIndex, ADBEBasicAudioGroup, &channelTypeParam);
@@ -240,10 +258,7 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
     PrTime frameRates[] = { 10, 15, 23, 24, 25, 29, 30, 50, 59, 60 };
     PrTime frameRateNumDens[][2] = { { 10, 1 }, { 15, 1 }, { 24000, 1001 }, { 24, 1 }, { 25, 1 }, { 30000, 1001 }, { 30, 1 }, { 50, 1 }, { 60000, 1001 }, { 60, 1 } };
 
-    exOneParamValueRec tempSampleRate;
-    exOneParamValueRec tempQuality;
-    float sampleRates[] = {44100.0f, 48000.0f};
-    exOneParamValueRec tempChannelType;
+    csSDK_int32 sampleRates[] = {44100, 48000};
     csSDK_int32 channelTypes[] = {kPrAudioChannelType_Mono, kPrAudioChannelType_Stereo, kPrAudioChannelType_51};
 
     const wchar_t* frameRateStrings[] = { STR_FRAME_RATE_10, STR_FRAME_RATE_15, STR_FRAME_RATE_23976, STR_FRAME_RATE_24, STR_FRAME_RATE_25, STR_FRAME_RATE_2997, STR_FRAME_RATE_30, STR_FRAME_RATE_50, STR_FRAME_RATE_5994, STR_FRAME_RATE_60 };
@@ -384,8 +399,9 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
         qualityValues.disabled = false;
         qualityValues.hidden = false;
         settings->exportParamSuite->ChangeParam(exID, 0, ADBEVideoQuality, &qualityValues);
-
         settings->exportParamSuite->ClearConstrainedValues(exID, 0, ADBEVideoQuality);
+
+        exOneParamValueRec tempQuality;
         for (const auto& quality : qualities)
         {
             tempQuality.intValue = (csSDK_int32)quality.first;
@@ -423,14 +439,21 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
         settings->exportParamSuite->ChangeParam(exID, 0, ID_CHUNK_COUNT, &chunkCountValues);
     }
 
+    exOneParamValueRec audioCodecVal = {.intValue = 0 };
+    settings->exportParamSuite->SetParamName(exID, 0, ADBEAudioCodec, StringForPr(AUDIO_CODEC_PARAM_GROUP_NAME));
+    settings->exportParamSuite->ClearConstrainedValues(exID, 0, ADBEAudioCodec);
+    settings->exportParamSuite->AddConstrainedValuePair(exID, 0, ADBEAudioCodec, &audioCodecVal, StringForPr("Uncompressed"));
+
+    exOneParamValueRec tempSampleRate;
     settings->exportParamSuite->SetParamName(exID, 0, ADBEAudioRatePerSecond, StringForPr(STR_SAMPLE_RATE));
     settings->exportParamSuite->ClearConstrainedValues(exID, 0, ADBEAudioRatePerSecond);
-    for (csSDK_int32 i = 0; i < sizeof(sampleRates) / sizeof(float); i++)
+    for (csSDK_int32 i = 0; i < sizeof(sampleRates) / sizeof(csSDK_int32); i++)
     {
-        tempSampleRate.floatValue = sampleRates[i];
+        tempSampleRate.intValue = sampleRates[i];
         settings->exportParamSuite->AddConstrainedValuePair(exID, 0, ADBEAudioRatePerSecond, &tempSampleRate, StringForPr(sampleRateStrings[i]));
     }
 
+    exOneParamValueRec tempChannelType;
     settings->exportParamSuite->SetParamName(exID, 0, ADBEAudioNumChannels, StringForPr(STR_CHANNEL_TYPE));
     settings->exportParamSuite->ClearConstrainedValues(exID, 0, ADBEAudioNumChannels);
     for (csSDK_int32 i = 0; i < sizeof(channelTypes) / sizeof(csSDK_int32); i++)
@@ -497,8 +520,8 @@ prMALError getParamSummary(exportStdParms *stdParmsP, exParamSummaryRec *summary
             audioChannelSummary = L"Unknown";
         }
 
-        swprintf(audioSummary, 256, L"Uncompressed, %.0f Hz, %ls, 16bit",
-                 sampleRate.value.floatValue,
+        swprintf(audioSummary, 256, L"Uncompressed, %i Hz, %ls, 16bit",
+                 sampleRate.value.intValue,
                  audioChannelSummary.c_str());
 		SDKStringConvert::to_buffer(audioSummary, summaryRecP->audioSummary);
     }

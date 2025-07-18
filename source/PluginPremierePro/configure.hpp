@@ -4,7 +4,7 @@
 #define ID_ALPHA_CHANNEL                "ParAlphaChannnel"
 #define ID_CHUNK_COUNT                  "ParChunkCount"
 
-#define TOP_VIDEO_PARAM_GROUP_NAME		L"Video parameters"
+#define TOP_VIDEO_PARAM_GROUP_NAME		L"Video"
 #define VIDEO_CODEC_PARAM_GROUP_NAME	L"Video Codec"
 #define BASIC_VIDEO_PARAM_GROUP_NAME	L"Basic Video Setings"
 #define STR_INCLUDE_ALPHA               L"Include Alpha Channel"
@@ -25,7 +25,8 @@
 #define STR_FRAME_RATE_5994				L"59.94"
 #define STR_FRAME_RATE_60				L"60"
 
-#define TOP_AUDIO_PARAM_GROUP_NAME      L"Audio parameters"
+#define TOP_AUDIO_PARAM_GROUP_NAME      L"Audio"
+#define AUDIO_CODEC_PARAM_GROUP_NAME    L"Audio Codec"
 #define BASIC_AUDIO_PARAM_GROUP_NAME    L"Basic Audio Setings"
 #define STR_SAMPLE_RATE                 L"Sample Rate"
 #define STR_SAMPLE_RATE_8               L"8000 Hz"
