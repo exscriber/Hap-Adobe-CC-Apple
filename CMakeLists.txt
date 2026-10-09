@@ -10,8 +10,22 @@ project(HapCodecPlugin)
 
 set(IDENTIFIER_PREFIX org.hapcommunity.HapCodecPlugin)
 set(CODEC_NAME HAP)
-set(FILE_IMPORT_FOUR_CC 0x48415000L)    # hex for HAP\0, needed as unique importer id so After Effects picks it up as an importer
-set(CODEC_NAME_WITH_HEX_SIZE_PREFIX "\"\\x07HAP\\0\\0\\0\\0\"")    # !!! hack - size must be 0x7 atm, and padded to 7-bytes- we're not using the recommended resource builder step that compiles the correct sizes around this
+
+function(FourCC RESULT ASCII)
+    string(HEX "${ASCII}" FOUR_CC_HEX)
+    string(APPEND FOUR_CC_HEX "00000000")
+    string(SUBSTRING ${FOUR_CC_HEX} 0 8 FOUR_CC_HEX)
+    set(${RESULT} "0x${FOUR_CC_HEX}" PARENT_SCOPE)
+endfunction()
+
+# MediaCore drawtype - this unique fourcc is required by After Effects,
+# and is not related to the filetype(s) supported by this MediaCore importer
+FourCC(FILE_IMPORT_FOUR_CC HAP1)
+
+# HACK: Win only - size must be 0x7 atm, and padded to 7-bytes
+# TODO: get rid of this variable and PluginAfterEffects/win/output_module_temp.rc as well
+# TODO: use PiPLtool.exe resource compiler from SDK to process *.r files on Win
+set(CODEC_NAME_WITH_HEX_SIZE_PREFIX "\"\\x07HAP\\0\\0\\0\\0\"") 
 
 add_subdirectory(external/Adobe)
 add_subdirectory(source/BaseCodec)
