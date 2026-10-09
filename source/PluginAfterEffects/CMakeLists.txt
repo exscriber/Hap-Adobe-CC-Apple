@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 4.0)
 
-add_definitions(-DCODEC_NAME_WITH_HEX_SIZE_PREFIX=${CODEC_NAME_WITH_HEX_SIZE_PREFIX})
+if (NOT DEFINED OBJC_PREFIX)
+    string(RANDOM LENGTH 5 ALPHABET ABCDEFGHIJKLMNOPQRSTUVWXYZ OBJC_PREFIX)
+endif ()
 
 # this is the one we will install
 add_library(PluginAfterEffects MODULE)

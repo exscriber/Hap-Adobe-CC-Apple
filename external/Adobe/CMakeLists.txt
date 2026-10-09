@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 4.0)
 project(AdobeSDK LANGUAGES C CXX)
 
 if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/AfterEffectsSDK/Headers/AEConfig.h)
