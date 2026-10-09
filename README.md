@@ -1,9 +1,8 @@
 # Hap Codec for Adobe CC on Apple Silicon
 
-This is fork of https://github.com/disguise-one/hap-encoder-adobe-cc
-
-Main focus of this repo: working plugins build for Apple Silicon platform.  
-Installer can be downloaded [here](https://github.com/exscriber/Hap-Adobe-CC-Apple/releases).
+This repo merges [disguise-one/hap-encoder-adobe-cc](https://github.com/disguise-one/hap-encoder-adobe-cc) and [codec-foundation/adobe-cc](https://github.com/codec-foundation/adobe-cc) back into one unified codebase.  
+Submodules were removed in favor of a simple flat repo with vcpkg dependency management.  
+Main goal is to provide working plugins for the Apple Silicon platform; Windows support is currently not a priority...
 
 ## What is HAP
 
