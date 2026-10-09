@@ -1,8 +1,8 @@
 #include "codec.hpp"
-#include "configure.hpp"
+#include "strings_en.hpp"
 #include "export_settings.hpp"
 #include "premiereParams.hpp"
-#include "prstring.hpp"
+#include "string_helper.hpp"
 #include "string_conversion.hpp"
 #include "util.hpp"
 

@@ -5,7 +5,7 @@
 #include "codec.hpp"
 #include "importer.hpp"
 #include "logging.hpp"
-#include "prstring.hpp"
+#include "string_helper.hpp"
 #include "string_conversion.hpp"
 
 #ifdef PRMAC_ENV
