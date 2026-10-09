@@ -7,11 +7,26 @@ endif ()
 # this is the one we will install
 add_library(PluginAfterEffects MODULE)
 
+if(MSVC)
+    target_compile_definitions(PluginAfterEffects PRIVATE 
+        CODEC_NAME_WITH_HEX_SIZE_PREFIX=${CODEC_NAME_WITH_HEX_SIZE_PREFIX})
+endif()
+
 if (MSVC)
-    set(${PROJECT_NAME}_OUTPUT_NAME "${CODEC_NAME}Plugin")
+    set(MODULE_NAME "${CODEC_NAME}Plugin")
 elseif (APPLE)
 # macOS plugins have a common extension, so identify the host in the name
-    set(${PROJECT_NAME}_OUTPUT_NAME "${CODEC_NAME}AfterEffects")
+    set(MODULE_NAME "${CODEC_NAME}AfterEffects")
+endif()
+
+if(APPLE)
+    # Generated PkgInfo file
+    set(PKG_TYPE "AEgx")
+    set(PKG_SIGN "FXTC")
+    set(PKG_FILE_GEN ${CMAKE_CURRENT_BINARY_DIR}/PkgInfo)
+
+    # Generated Resource file
+    set(RES_FILE_GEN ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_NAME}.rsrc)
 endif()
 
 target_sources(PluginAfterEffects
@@ -30,39 +45,21 @@ target_sources(PluginAfterEffects
         $<$<PLATFORM_ID:Darwin>:mac/FNDControlViewController.m>
         $<$<PLATFORM_ID:Darwin>:mac/FNDObjC.h>
         $<$<PLATFORM_ID:Darwin>:mac/FNDControlViewController.h>
-        $<$<PLATFORM_ID:Darwin>:mac/PkgInfo>
-        $<$<PLATFORM_ID:Darwin>:${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_OUTPUT_NAME}.rsrc>
+        $<$<PLATFORM_ID:Darwin>:${PKG_FILE_GEN}>
+        $<$<PLATFORM_ID:Darwin>:${RES_FILE_GEN}>
 )
 
-if (NOT DEFINED IDENTIFIER_PREFIX)
-    message(FATAL_ERROR "Parent must define IDENTIFIER_PREFIX")
-endif ()
-if (NOT DEFINED CODEC_NAME)
-    message(FATAL_ERROR "Parent must define CODEC_NAME")
-endif ()
-if (NOT DEFINED INSTALL_DESTINATION)
-    message(FATAL_ERROR "Parent must define INSTALL_DESTINATION")
-endif ()
-if (NOT DEFINED Foundation_OBJC_PREFIX)
-string(RANDOM LENGTH 5 ALPHABET ABCDEFGHIJKLMNOPQRSTUVWXYZ
-        Foundation_OBJC_PREFIX)
-endif ()
-
-set(${PROJECT_NAME}_OSX_BUNDLE_IDENTIFIER ${IDENTIFIER_PREFIX}.aex)
-
 if (APPLE)
-    set_property(SOURCE mac/ui.mm mac/FNDControlViewController.m
-                    APPEND_STRING
-                    PROPERTY COMPILE_FLAGS "-fobjc-arc"
+    # 
+    set(AE_BUNDLE_IDENTIFIER ${IDENTIFIER_PREFIX}.aex)
+
+    # ObjC files
+    set_source_files_properties(mac/ui.mm mac/FNDControlViewController.m
+    PROPERTIES
+        COMPILE_OPTIONS "-fobjc-arc"
+        COMPILE_DEFINITIONS "OBJC_PREFIX=${OBJC_PREFIX};BUNDLE_GUI_IDENTIFIER=@\"${AE_BUNDLE_IDENTIFIER}\""
     )
-    set_property(SOURCE mac/ui.mm mac/FNDControlViewController.m
-                    APPEND
-                    PROPERTY COMPILE_DEFINITIONS FOUNDATION_OBJC_PREFIX=${Foundation_OBJC_PREFIX} BUNDLE_GUI_IDENTIFIER=@\"${${PROJECT_NAME}_OSX_BUNDLE_IDENTIFIER}\"
-    )
-# Required for AE to load the plugin at all
-    set_source_files_properties(mac/PkgInfo
-                                PROPERTIES MACOSX_PACKAGE_LOCATION ""
-    )
+
 endif (APPLE)
 
 find_library(AppKit AppKit)
@@ -82,7 +79,7 @@ target_link_libraries(PluginAfterEffects
 
 set_target_properties(PluginAfterEffects
         PROPERTIES
-            OUTPUT_NAME "${${PROJECT_NAME}_OUTPUT_NAME}"
+            OUTPUT_NAME "${MODULE_NAME}"
 )
 
 if (MSVC)
@@ -93,64 +90,69 @@ if (MSVC)
 endif(MSVC)
 
 if (APPLE)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/mac/SettingsViewController.xib.in ${CMAKE_BINARY_DIR}/SettingsViewController.xib)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/mac/SettingsViewController.xib.in ${CMAKE_CURRENT_BINARY_DIR}/SettingsViewController.xib)
+    if (XCODE)
+        target_sources(PluginAfterEffects PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/SettingsViewController.xib)
+    else ()
+        find_program(APPLE_IBTOOL ibtool REQUIRED)
+        set(NIB_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/SettingsViewController.nib")
+        add_custom_command(
+            OUTPUT ${NIB_OUTPUT}
+            COMMAND ${APPLE_IBTOOL}
+                --errors --warnings --notices
+                --module "${PROJECT_NAME}"
+                --target-device mac
+                --output-format "human-readable-text"
+                --compile "${NIB_OUTPUT}" "${CMAKE_CURRENT_BINARY_DIR}/SettingsViewController.xib"
+            DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/SettingsViewController.xib"
+            COMMENT "Building UI interface ${NIB_OUTPUT}"
+            VERBATIM
+        )
+        target_sources(PluginAfterEffects PRIVATE "${NIB_OUTPUT}")
+    endif()
 endif (APPLE)
 
-if (APPLE AND NOT XCODE)
-    target_sources(PluginAfterEffects
-        PRIVATE
-            ${CMAKE_BINARY_DIR}/SettingsViewController.nib)
-
-    find_program(APPLE_IBTOOL ibtool)
-    if (APPLE_IBTOOL)
-        add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/SettingsViewController.nib
-                            COMMAND ${APPLE_IBTOOL} --errors --warnings --notices --module "${PROJECT_NAME}" --target-device mac --output-format "human-readable-text" --compile "${CMAKE_BINARY_DIR}/SettingsViewController.nib" "${CMAKE_BINARY_DIR}/SettingsViewController.xib"
-                            COMMENT "Creating macOS interface file"
-                            DEPENDS ${CMAKE_BINARY_DIR}/SettingsViewController.xib
-                            VERBATIM)
-    else ()
-        message(FATAL_ERROR "Can't find ibtool to build macOS interface file.")
-    endif ()
-elseif (APPLE)
-    target_sources(PluginAfterEffects
-        PRIVATE
-            ${CMAKE_BINARY_DIR}/SettingsViewController.xib)
-endif ()
-
 if (APPLE)
-    find_program(APPLE_RESOURCE Rez)
-    if (APPLE_RESOURCE)
-        add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_OUTPUT_NAME}.rsrc
-                            COMMAND ${APPLE_RESOURCE} ${CMAKE_CURRENT_SOURCE_DIR}/output_module.r -define __MACH__ -define CODEC_NAME="${CODEC_NAME}" -useDF -i "$<JOIN:$<TARGET_PROPERTY:AdobeAfterEffectsSDK,INTERFACE_INCLUDE_DIRECTORIES>,;-i;>" -o ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_OUTPUT_NAME}.rsrc
-                            COMMENT "Creating macOS resource file"
-                            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/output_module.r AdobeAfterEffectsSDK
-                            VERBATIM
-                            COMMAND_EXPAND_LISTS)
-    else (APPLE_RESOURCE)
-        message(FATAL_ERROR "Can't find Rez to build macOS resource file.")
-    endif (APPLE_RESOURCE)
+    find_program(APPLE_REZ Rez REQUIRED)
+    add_custom_command(
+        OUTPUT ${RES_FILE_GEN}
+        COMMAND ${APPLE_REZ}
+            ${CMAKE_CURRENT_SOURCE_DIR}/PiPL.r
+            -define __MACH__
+            -define CODEC_NAME="${CODEC_NAME}"
+            -useDF
+            -i "$<JOIN:$<TARGET_PROPERTY:AdobeAfterEffectsSDK,INTERFACE_INCLUDE_DIRECTORIES>,;-i;>"
+            -o "${RES_FILE_GEN}"
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/PiPL.r AdobeAfterEffectsSDK
+        COMMENT "Building resource ${RES_FILE_GEN}"
+        VERBATIM
+        COMMAND_EXPAND_LISTS
+    )
+    add_custom_command(
+        OUTPUT ${PKG_FILE_GEN}
+        COMMAND ${CMAKE_COMMAND} -E echo_append "${PKG_TYPE}${PKG_SIGN}" > "${PKG_FILE_GEN}"
+        COMMENT "Generating PkgInfo"
+        VERBATIM
+    )
 endif (APPLE)
 
 set_target_properties(PluginAfterEffects
     PROPERTIES
 	    BUNDLE TRUE
-	    MACOSX_BUNDLE_GUI_IDENTIFIER ${${PROJECT_NAME}_OSX_BUNDLE_IDENTIFIER}
-        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/mac/MacOSXBundleInfo.plist.in
+	    MACOSX_BUNDLE_GUI_IDENTIFIER ${AE_BUNDLE_IDENTIFIER}
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/mac/Info.plist
 )
+
 if (APPLE)
-# These could be a RESOURCE property on the target, however CMake gives a misleading warning about RESOURCE properties
+    set_source_files_properties(${PKG_FILE_GEN}
+        PROPERTIES MACOSX_PACKAGE_LOCATION "")
+
+    # These could be a RESOURCE property on the target, however CMake gives a misleading warning about RESOURCE properties
     set_source_files_properties(
-        ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_OUTPUT_NAME}.rsrc
+        ${RES_FILE_GEN}
+        ${CMAKE_CURRENT_BINARY_DIR}/SettingsViewController.xib
+        ${CMAKE_CURRENT_BINARY_DIR}/SettingsViewController.nib
         PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-    if (XCODE)
-        set_source_files_properties(
-            ${CMAKE_BINARY_DIR}/SettingsViewController.xib
-            PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-    else (XCODE)
-        set_source_files_properties(
-            ${CMAKE_BINARY_DIR}/SettingsViewController.nib
-            PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-    endif (XCODE)
 endif (APPLE)
 
 install(
