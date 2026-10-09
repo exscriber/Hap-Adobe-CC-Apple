@@ -1,11 +1,10 @@
-#include "configure.hpp"
+#include "strings_en.hpp"
 #include "logging.hpp"
 #include "premiereExporter.hpp"
 #include "premiereParams.hpp"
-#include "prstring.hpp"
+#include "string_helper.hpp"
 #include "export_settings.hpp"
 #include "exporter.hpp"
-#include "configure.hpp"
 #include "string_conversion.hpp"
 
 #ifdef WIN32

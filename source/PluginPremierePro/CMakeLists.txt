@@ -5,14 +5,13 @@ add_library(PluginPremierePro MODULE)
 
 target_sources(PluginPremierePro
     PRIVATE
-        configure.hpp
+        strings_en.hpp
         export_settings.hpp
         premiereExporter.cpp
         premiereExporter.hpp
         premiereParams.cpp
         premiereParams.hpp
-        prstring.cpp
-        prstring.hpp
+        string_helper.hpp
 )
 
 find_library(Foundation Foundation)
@@ -55,7 +54,7 @@ endif (APPLE)
 set_target_properties(PluginPremierePro
     PROPERTIES
 	    BUNDLE TRUE
-	    MACOSX_BUNDLE_GUI_IDENTIFIER ${IDENTIFIER_PREFIX}.pr
+	    MACOSX_BUNDLE_GUI_IDENTIFIER ${IDENTIFIER_PREFIX}.prm
 )
 
 install(
