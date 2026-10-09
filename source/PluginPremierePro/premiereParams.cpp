@@ -261,11 +261,11 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
     PrTime frameRates[] = { 10, 15, 23, 24, 25, 29, 30, 50, 59, 60 };
     PrTime frameRateNumDens[][2] = { { 10, 1 }, { 15, 1 }, { 24000, 1001 }, { 24, 1 }, { 25, 1 }, { 30000, 1001 }, { 30, 1 }, { 50, 1 }, { 60000, 1001 }, { 60, 1 } };
 
-    csSDK_int32 sampleRates[] = {44100, 48000};
+    csSDK_int32 sampleRates[] = {44100, 48000, 96000};
     csSDK_int32 channelTypes[] = {kPrAudioChannelType_Mono, kPrAudioChannelType_Stereo, kPrAudioChannelType_51};
 
     const wchar_t* frameRateStrings[] = { STR_FRAME_RATE_10, STR_FRAME_RATE_15, STR_FRAME_RATE_23976, STR_FRAME_RATE_24, STR_FRAME_RATE_25, STR_FRAME_RATE_2997, STR_FRAME_RATE_30, STR_FRAME_RATE_50, STR_FRAME_RATE_5994, STR_FRAME_RATE_60 };
-    const wchar_t *sampleRateStrings[] = {STR_SAMPLE_RATE_441, STR_SAMPLE_RATE_48};
+    const wchar_t *sampleRateStrings[] = {STR_SAMPLE_RATE_441, STR_SAMPLE_RATE_48, STR_SAMPLE_RATE_96};
     const wchar_t *channelTypeStrings[] = {STR_CHANNEL_TYPE_MONO, STR_CHANNEL_TYPE_STEREO, STR_CHANNEL_TYPE_51};
 
 
@@ -274,14 +274,14 @@ prMALError postProcessParams(exportStdParms *stdParmsP, exPostProcessParamsRec *
         frameRates[i] = ticksPerSecond / frameRateNumDens[i][0] * frameRateNumDens[i][1];
 
     settings->exportParamSuite->SetParamName(exID, 0, ADBEVideoCodecGroup, StringForPr(VIDEO_CODEC_PARAM_GROUP_NAME));
-
     settings->exportParamSuite->SetParamName(exID, 0, ADBEVideoCodec, StringForPr(STR_CODEC));
-
     settings->exportParamSuite->SetParamName(exID, 0, ADBEBasicVideoGroup, StringForPr(BASIC_VIDEO_PARAM_GROUP_NAME));
 
     settings->exportParamSuite->SetParamName(exID, 0, ADBEVideoWidth, StringForPr(STR_WIDTH));
-
     settings->exportParamSuite->SetParamName(exID, 0, ADBEVideoHeight, StringForPr(STR_HEIGHT));
+
+    settings->exportParamSuite->SetParamName(exID, 0, ADBEAudioCodecGroup, StringForPr(AUDIO_CODEC_PARAM_GROUP_NAME));
+    settings->exportParamSuite->SetParamName(exID, 0, ADBEBasicAudioGroup, StringForPr(BASIC_AUDIO_PARAM_GROUP_NAME));
 
 #if 0 // Probably not necessary
     // width
