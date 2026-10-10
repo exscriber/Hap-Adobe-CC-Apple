@@ -6,6 +6,10 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0" CACHE STRING "Minimum OS X deployment version")
 
+if (APPLE)
+    add_compile_options(-Wno-deprecated-enum-enum-conversion -Wno-nontrivial-memcall)
+endif()
+
 project(HapCodecPlugin)
 
 set(IDENTIFIER_PREFIX org.hapcommunity.HapCodecPlugin)
@@ -33,7 +37,7 @@ add_subdirectory(source/HapCodec)
 add_subdirectory(source/MediaSession)
 
 if (APPLE)
-    set (INSTALL_DESTINATION "Library/Application Support/Adobe/Common/Plug-ins/7.0/MediaCore/${CODEC_NAME}")
+    set (INSTALL_DESTINATION "/Library/Application Support/Adobe/Common/Plug-ins/7.0/MediaCore/${CODEC_NAME}")
 else ()
     set (INSTALL_DESTINATION .)
 endif ()
