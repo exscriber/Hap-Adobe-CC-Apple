@@ -46,6 +46,7 @@ add_definitions(-DCODEC_NAME="${CODEC_NAME}")
 add_subdirectory(source/Utility)
 add_subdirectory(source/PluginAfterEffects)
 add_subdirectory(source/PluginPremierePro)
+add_subdirectory(source/PluginMediaImport)
 
 include(installer/CodecInstaller.cmake)
 add_subdirectory(installer)
